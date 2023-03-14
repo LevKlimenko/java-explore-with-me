@@ -20,8 +20,8 @@ services:
       - "6541:5432"
     environment:
       - POSTGRES_DB=stats-db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=ewm
+      - POSTGRES_PASSWORD=ewm
 
   ewm-service:
     build:
