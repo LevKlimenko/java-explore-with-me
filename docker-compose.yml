@@ -15,15 +15,13 @@ services:
 
   stats-db:
     image: postgres:14-alpine
-    container_name: ewm-stats-db
-    volumes:
-      - /var/lib/postgresql/data
+    container_name: ewm-stats
     ports:
       - "6541:5432"
     environment:
-      -POSTGRES_DB=stats-db
-      -POSTGRES_USER=postgres
-      -POSTGRES_PASSWORD=password
+      - POSTGRES_DB=stats-db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
 
   ewm-service:
     build:
