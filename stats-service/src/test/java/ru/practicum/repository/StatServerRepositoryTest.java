@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class StatServerRepositoryTest {
-    private final LocalDateTime START = LocalDateTime.of(2023, 3, 14, 9, 0, 0);
-    private final LocalDateTime END = LocalDateTime.of(2023, 3, 20, 10, 0, 0);
+    private static final LocalDateTime TIME_START = LocalDateTime.of(2023, 3, 14, 9, 0, 0);
+    private static final LocalDateTime TIME_END = LocalDateTime.of(2023, 3, 20, 10, 0, 0);
     @Autowired
     StatRepository statRepository;
 
@@ -27,17 +27,17 @@ public class StatServerRepositoryTest {
                 .app("new app")
                 .uri("/events/1")
                 .ip("192.168.0.1")
-                .timestamp(START.plusSeconds(1))
+                .timestamp(TIME_START.plusSeconds(1))
                 .build();
         Hit hit1 = Hit.builder()
                 .app("new app")
                 .uri("/events/1")
                 .ip("192.168.0.1")
-                .timestamp(END.minusSeconds(1))
+                .timestamp(TIME_END.minusSeconds(1))
                 .build();
         statRepository.save(hit);
         statRepository.save(hit1);
-        List<ViewStats> stats = statRepository.findDistinctViews(START, END, List.of("/events/1"));
+        List<ViewStats> stats = statRepository.findDistinctViews(TIME_START, TIME_END, List.of("/events/1"));
         assertEquals(1, stats.size());
         assertEquals("new app", stats.get(0).getApp());
         assertEquals("/events/1", stats.get(0).getUri());
@@ -50,17 +50,17 @@ public class StatServerRepositoryTest {
                 .app("new app")
                 .uri("/events/1")
                 .ip("192.168.0.2")
-                .timestamp(START.plusSeconds(1))
+                .timestamp(TIME_START.plusSeconds(1))
                 .build();
         Hit hit1 = Hit.builder()
                 .app("new app")
                 .uri("/events/1")
                 .ip("192.168.0.1")
-                .timestamp(END.minusSeconds(1))
+                .timestamp(TIME_END.minusSeconds(1))
                 .build();
         statRepository.save(hit);
         statRepository.save(hit1);
-        List<ViewStats> stats = statRepository.findDistinctViews(START, END, List.of("/events/1"));
+        List<ViewStats> stats = statRepository.findDistinctViews(TIME_START, TIME_END, List.of("/events/1"));
         assertEquals(1, stats.size());
         assertEquals("new app", stats.get(0).getApp());
         assertEquals("/events/1", stats.get(0).getUri());
@@ -74,17 +74,17 @@ public class StatServerRepositoryTest {
                 .app("new app")
                 .uri("/events/1")
                 .ip("192.168.0.1")
-                .timestamp(START.plusSeconds(1))
+                .timestamp(TIME_START.plusSeconds(1))
                 .build();
         Hit hit1 = Hit.builder()
                 .app("new app")
                 .uri("/events/1")
                 .ip("192.168.0.1")
-                .timestamp(END.minusSeconds(1))
+                .timestamp(TIME_END.minusSeconds(1))
                 .build();
         statRepository.save(hit);
         statRepository.save(hit1);
-        List<ViewStats> stats = statRepository.findViews(START, END, List.of("/events/1"));
+        List<ViewStats> stats = statRepository.findViews(TIME_START, TIME_END, List.of("/events/1"));
         assertEquals(1, stats.size());
         assertEquals("new app", stats.get(0).getApp());
         assertEquals("/events/1", stats.get(0).getUri());
@@ -97,17 +97,17 @@ public class StatServerRepositoryTest {
                 .app("new app")
                 .uri("/events/1")
                 .ip("192.168.0.1")
-                .timestamp(START.minusSeconds(1))
+                .timestamp(TIME_START.minusSeconds(1))
                 .build();
         Hit hit1 = Hit.builder()
                 .app("new app")
                 .uri("/events/1")
                 .ip("192.168.0.1")
-                .timestamp(END.plusSeconds(1))
+                .timestamp(TIME_END.plusSeconds(1))
                 .build();
         statRepository.save(hit);
         statRepository.save(hit1);
-        List<ViewStats> stats = statRepository.findViews(START, END, List.of("/events/1"));
+        List<ViewStats> stats = statRepository.findViews(TIME_START, TIME_END, List.of("/events/1"));
         assertEquals(0, stats.size());
     }
 }
