@@ -39,6 +39,7 @@ public class Hit {
                 ip.equals(hit.ip) &&
                 timestamp.equals(hit.timestamp);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, app, uri, ip, timestamp);
