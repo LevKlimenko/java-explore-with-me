@@ -17,8 +17,8 @@ import java.util.List;
 public class StatServiceImpl implements StatService {
     private final StatRepository statRepository;
 
-
     @Override
+    @Transactional
     public void save(HitDtoRequest hitDtoRequest) {
         statRepository.save(HitMapper.toHit(hitDtoRequest));
     }
