@@ -30,7 +30,7 @@ public class StatClient extends BaseClient {
         parameters.put("start", start);
         parameters.put("end", end);
         parameters.put("unique", unique);
-        if (uris != null || uris.length != 0) {
+        if (uris != null && uris.length != 0) {
             parameters.put("uris", uris);
         }
         if (parameters.containsKey("uris")) {
