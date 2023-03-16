@@ -33,12 +33,11 @@ public class StatController {
     public ResponseEntity<Object> getStat(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                           @RequestParam(defaultValue = "false") Boolean unique,
-                                          @RequestParam List<String> uris){
+                                          @RequestParam List<String> uris) {
         log.info("Получение данных");
-
-        if (uris.isEmpty()){
-            return new ResponseEntity<>(List.of(),HttpStatus.OK);
-            }
-        return statClient.getStat(start.toString(),end.toString(),unique,uris.toArray(String[]::new));
+        if (uris.isEmpty()) {
+            return new ResponseEntity<>(List.of(), HttpStatus.OK);
         }
+        return statClient.getStat(start.toString(), end.toString(), unique, uris.toArray(String[]::new));
     }
+}
