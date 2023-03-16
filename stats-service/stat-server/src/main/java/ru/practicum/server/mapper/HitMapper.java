@@ -6,18 +6,14 @@ import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.server.model.Hit;
 import ru.practicum.server.model.ViewStats;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @UtilityClass
 public class HitMapper {
-
     public static HitRequestDto toHitDtoRequest(Hit hit) {
         return new HitRequestDto(
                 hit.getApp(),
                 hit.getUri(),
                 hit.getIp(),
-                hit.getTimestamp().toString()
+                hit.getTimestamp()
         );
     }
 
@@ -26,8 +22,7 @@ public class HitMapper {
         hit.setApp(hitDtoRequest.getApp());
         hit.setUri(hitDtoRequest.getUri());
         hit.setIp(hitDtoRequest.getIp());
-        hit.setTimestamp(LocalDateTime.parse(hitDtoRequest.getTimestamp(),
-                DateTimeFormatter.ofPattern(("yyyy-MM-dd HH:mm:ss"))));
+        hit.setTimestamp(hitDtoRequest.getTimestamp());
         return hit;
     }
 

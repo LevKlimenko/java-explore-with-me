@@ -19,6 +19,13 @@ public interface StatRepository extends JpaRepository<Hit, Long> {
             "ORDER BY COUNT (DISTINCT h.ip) DESC")
     List<ViewStats> findDistinctViews(LocalDateTime start, LocalDateTime end, List<String> uris);
 
+    @Query("SELECT new ru.practicum.server.model.ViewStats(h.app,h.uri, COUNT(DISTINCT h.ip)) " +
+            "FROM Hit h " +
+            "WHERE h.timestamp BETWEEN ?1 and ?2 " +
+            "GROUP BY h.app, h.uri " +
+            "ORDER BY COUNT (DISTINCT h.ip) DESC")
+    List<ViewStats> findDistinctViewsAll(LocalDateTime start, LocalDateTime end);
+
     @Query("SELECT new ru.practicum.server.model.ViewStats(h.app,h.uri, COUNT(h.ip)) " +
             "FROM Hit h " +
             "WHERE h.timestamp BETWEEN ?1 and ?2 " +
@@ -26,4 +33,11 @@ public interface StatRepository extends JpaRepository<Hit, Long> {
             "GROUP BY h.app, h.uri " +
             "ORDER BY COUNT (h.ip) DESC")
     List<ViewStats> findViews(LocalDateTime start, LocalDateTime end, List<String> uris);
+
+    @Query("SELECT new ru.practicum.server.model.ViewStats(h.app,h.uri, COUNT(h.ip)) " +
+            "FROM Hit h " +
+            "WHERE h.timestamp BETWEEN ?1 and ?2 " +
+            "GROUP BY h.app, h.uri " +
+            "ORDER BY COUNT (h.ip) DESC")
+    List<ViewStats> findViewsAll(LocalDateTime start, LocalDateTime end);
 }

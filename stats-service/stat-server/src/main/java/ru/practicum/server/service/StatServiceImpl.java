@@ -27,9 +27,17 @@ public class StatServiceImpl implements StatService {
     @Override
     public List<ViewStatsDto> findAll(LocalDateTime start, LocalDateTime end, boolean unique, List<String> uris) {
         if (unique) {
-            return statRepository.findDistinctViews(start, end, uris).stream().map(HitMapper::toViewStatsDto)
-                    .collect(Collectors.toList());
-        } else return statRepository.findViews(start, end, uris).stream().map(HitMapper::toViewStatsDto)
-                .collect(Collectors.toList());
+            if (uris == null || uris.size() == 0) {
+                return statRepository.findDistinctViewsAll(start, end).stream().map(HitMapper::toViewStatsDto).collect(Collectors.toList());
+            } else {
+                return statRepository.findDistinctViews(start, end, uris).stream().map(HitMapper::toViewStatsDto).collect(Collectors.toList());
+            }
+        } else {
+            if (uris == null || uris.size() == 0) {
+                return statRepository.findViewsAll(start, end).stream().map(HitMapper::toViewStatsDto).collect(Collectors.toList());
+            } else {
+                return statRepository.findViews(start, end, uris).stream().map(HitMapper::toViewStatsDto).collect(Collectors.toList());
+            }
+        }
     }
 }

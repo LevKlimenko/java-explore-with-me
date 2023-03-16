@@ -10,19 +10,15 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.client.client.BaseClient;
 import ru.practicum.dto.HitRequestDto;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class StatClient extends BaseClient {
 
     @Autowired
-    public StatClient(@Value("http://localhost:9090") String serverUrl, RestTemplateBuilder builder) {
-        super(
-                builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
-                        .build()
-        );
+    public StatClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
+        super(builder.uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl)).requestFactory(HttpComponentsClientHttpRequestFactory::new).build());
     }
 
     public ResponseEntity<Object> saveHit(HitRequestDto hitRequestDto) {
@@ -30,12 +26,17 @@ public class StatClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getStat(String start, String end, Boolean unique, String[] uris) {
-        Map<String, Object> parameters = Map.of(
-                "start", start,
-                "end", end,
-                "unique", unique,
-                "uris",uris
-                );
-        return get("/stats?start={}&end={}&unique={}&uris={}",null, parameters);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("start", start);
+        parameters.put("end", end);
+        parameters.put("unique", unique);
+        if (uris != null || uris.length != 0) {
+            parameters.put("uris", uris);
+        }
+        if (parameters.containsKey("uris")) {
+            return get("/stats?start={}&end={}&unique={}&uris={}", null, parameters);
+        } else {
+            return get("/stats?start={}&end={}&unique={}", null, parameters);
+        }
     }
 }
