@@ -12,6 +12,7 @@ import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.server.mapper.StatMapper;
 import ru.practicum.server.service.StatService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,10 +24,11 @@ public class StatController {
     private final StatService hitService;
 
     @PostMapping("/hit")
-    public ResponseEntity<String> save(@RequestBody HitRequestDto hitDtoRequest) {
-        hitService.save(StatMapper.toHit(hitDtoRequest), StatMapper.toApp(hitDtoRequest.getApp()));
-        log.info("Hit have been saved, HitApp = '{}', HitIp = '{}', uri = '{}'",
-                hitDtoRequest.getApp(), hitDtoRequest.getIp(), hitDtoRequest.getUri());
+    public ResponseEntity<String> save(@RequestBody HitRequestDto hitDtoRequest, HttpServletRequest request) {
+        String ip = request.getRemoteAddr();
+        hitService.save(StatMapper.toHit(hitDtoRequest), StatMapper.toApp(hitDtoRequest.getApp()), ip);
+        log.info("Hit have been saved, HitApp = '{}', uri = '{}' from IP={}",
+                hitDtoRequest.getApp(), hitDtoRequest.getUri(), ip);
 
         return new ResponseEntity<>("Information saved", HttpStatus.CREATED);
     }

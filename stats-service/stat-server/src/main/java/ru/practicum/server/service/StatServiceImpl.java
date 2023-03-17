@@ -28,7 +28,8 @@ public class StatServiceImpl implements StatService {
 
     @Override
     @Transactional
-    public void save(Hit hit, App app) {
+    public void save(Hit hit, App app, String ip) {
+        hit.setIp(ip);
         hit.setApp(Objects.requireNonNullElseGet(appRepository.findByName(app.getName()),
                 () -> appRepository.save(app)));
         statRepository.save(hit);

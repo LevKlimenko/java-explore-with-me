@@ -18,7 +18,6 @@ public class HitRequestDto {
     String app;
     @NotBlank
     String uri;
-    @NotBlank
     String ip;
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

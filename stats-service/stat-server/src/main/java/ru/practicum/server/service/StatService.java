@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StatService {
-    void save(Hit hit, App app);
+    void save(Hit hit, App app, String ip);
 
     List<ViewStatsDto> findAll(LocalDateTime start, LocalDateTime end, boolean unique, List<String> uris);
 }
