@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.HitRequestDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.server.mapper.StatMapper;
 import ru.practicum.server.service.StatService;
 
 import java.time.LocalDateTime;
@@ -23,7 +24,7 @@ public class StatController {
 
     @PostMapping("/hit")
     public ResponseEntity<String> save(@RequestBody HitRequestDto hitDtoRequest) {
-        hitService.save(hitDtoRequest);
+        hitService.save(StatMapper.toHit(hitDtoRequest), StatMapper.toApp(hitDtoRequest.getApp()));
         log.info("Hit have been saved, HitApp = '{}', HitIp = '{}', uri = '{}'",
                 hitDtoRequest.getApp(), hitDtoRequest.getIp(), hitDtoRequest.getUri());
 

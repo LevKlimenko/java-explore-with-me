@@ -19,8 +19,9 @@ public class Hit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @Column
-    String app;
+    @ManyToOne
+    @JoinColumn(name = "app_id")
+    App app;
     @Column
     String uri;
     @Column
