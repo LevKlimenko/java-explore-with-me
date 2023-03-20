@@ -1,6 +1,7 @@
 package ru.practicum.user.service;
 
 import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.dto.UserRequestDto;
 import ru.practicum.user.model.User;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface UserService {
 
     UserDto findById(Long id);
 
-    List<UserDto> findAll(int from, int size);
+    List<UserDto> findAll(List<String> ids, int from, int size);
 }
