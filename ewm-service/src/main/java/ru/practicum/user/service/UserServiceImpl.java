@@ -47,8 +47,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean deleteById(Long id) {
-        findById(id);
-        userRepository.deleteById(id);
+        User user = UserMapper.toUser(findById(id));
+        userRepository.deleteById(user.getId());
         return true;
     }
 
@@ -63,11 +63,12 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(from / size, size, SORT_BY_ASC);
         if (ids == null || ids.isEmpty()) {
             return UserMapper.toListUserDto(userRepository.getAll(pageable).getContent());
+        } else if (ids.size() == 1) {
+            long idsFrom = parseAndCheckIds(ids.get(0));
+            return UserMapper.toListUserDto(userRepository.getAllByIdIsAfterOrderById(idsFrom, pageable));
         } else {
-            long idsStart;
-            long idsEnd;
-            idsStart = parseAndCheckIds(ids.get(0));
-            idsEnd = parseAndCheckIds(ids.get(1));
+            long idsStart = parseAndCheckIds(ids.get(0));
+            long idsEnd = parseAndCheckIds(ids.get(1));
             if (idsStart > idsEnd) {
                 throw new BadRequestException("ids Start should be greater than idsEnd. idsStart=" + idsStart +
                         "  idsEnd=" + idsEnd);
