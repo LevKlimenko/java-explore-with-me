@@ -25,7 +25,7 @@ public class Event {
     @JoinColumn(name = "category_id",nullable = false)
     Category category;
     @Column(name = "confirmed_request")
-    Integer confirmedRequest;
+    Long confirmedRequest;
     @Column(name = "created_on")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdOn;
@@ -34,7 +34,7 @@ public class Event {
     @Embedded
     @AttributeOverrides(value = {
             @AttributeOverride(name = "lat", column = @Column(name = "lat")),
-            @AttributeOverride(name = "lot", column = @Column(name = "lot"))
+            @AttributeOverride(name = "lon", column = @Column(name = "lon"))
     })
     Location location;
     @Column(nullable = false)
@@ -46,7 +46,7 @@ public class Event {
     @Column(nullable = false)
     boolean paid;
     @Column
-    Integer participantLimit;
+    Long participantLimit;
     @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime publishedOn;
