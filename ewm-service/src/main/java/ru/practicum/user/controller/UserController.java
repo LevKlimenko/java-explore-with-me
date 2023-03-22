@@ -35,7 +35,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @Validated(Update.class) @RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @Validated(Update.class)
+                                        @RequestBody UserRequestDto userRequestDto) {
         UserDto updateUser = userService.update(id, UserMapper.toUser(userRequestDto));
         log.info("The user have been update, UserID={}", updateUser.getId());
         return new ResponseEntity<>(updateUser, HttpStatus.OK);

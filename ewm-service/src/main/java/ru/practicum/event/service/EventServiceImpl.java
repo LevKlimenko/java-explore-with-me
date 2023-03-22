@@ -27,6 +27,8 @@ import ru.practicum.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.event.model.State.PUBLISHED;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -66,12 +68,11 @@ public class EventServiceImpl implements EventService {
     public EventFullDto patch(Long userId, Long eventId, UpdateEventDto updateEventDto) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
+        if (event.getState() == PUBLISHED) {
+            throw new ConflictException("Illegal state for update event");
+        }
         if (!event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("You're not owner for event id=" + eventId);
-        }
-        State state = event.getState();
-        if (state != State.CANCELED && state != State.PENDING) {
-            throw new ConflictException("Illegal state for update event. state=" + state);
         }
         return EventMapper.toEventFullDto(checkAndUpdateEvent(eventId, updateEventDto));
     }
@@ -107,19 +108,19 @@ public class EventServiceImpl implements EventService {
 
     private void checkEventDateTimeIsAfter2HoursFromNow(LocalDateTime time) {
         if (time.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ForbiddenException("Event time should be after 2 hours from now");
+            throw new ConflictException("Event time should be after 2 hours from now");
         }
     }
 
     private Event checkAndUpdateEvent(Long eventId, UpdateEventDto upEventDto) {
         Event event = findEventOrGetThrow(eventId);
-        if (!upEventDto.getAnnotation().isBlank()) {
+        if (upEventDto.getAnnotation() != null) {
             event.setAnnotation(upEventDto.getAnnotation());
         }
         if (upEventDto.getCategory() != null) {
             event.setCategory(findCategoryOrGetThrow(upEventDto.getCategory()));
         }
-        if (!upEventDto.getDescription().isBlank()) {
+        if (upEventDto.getDescription() !=null) {
             event.setDescription(upEventDto.getDescription());
         }
         if (upEventDto.getEventDate() != null) {

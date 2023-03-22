@@ -5,6 +5,8 @@ import ru.practicum.event.model.Event;
 import ru.practicum.request.model.Request;
 import ru.practicum.user.model.User;
 
+import java.util.Optional;
+
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    Request findFirstByEventAndUser(Event event, User user);
+    Optional<Request> findByEventIdAndRequesterId(Long eventId, Long requesterId);
 }

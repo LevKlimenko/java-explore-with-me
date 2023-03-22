@@ -5,7 +5,6 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventDto;
 
-import java.lang.reflect.Array;
 import java.util.List;
 
 public interface EventService {
