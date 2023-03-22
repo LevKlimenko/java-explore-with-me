@@ -22,7 +22,7 @@ public class Event {
     @Column(nullable = false)
     String annotation;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id",nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     Category category;
     @Column(name = "confirmed_request")
     Long confirmedRequest;
@@ -44,14 +44,14 @@ public class Event {
     @JoinColumn(name = "initiator_id", nullable = false)
     User initiator;
     @Column(nullable = false)
-    boolean paid;
+    Boolean paid;
     @Column
     Long participantLimit;
     @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime publishedOn;
     @Column
-    boolean requestModeration;
+    Boolean requestModeration;
     @Column
     @Enumerated(EnumType.STRING)
     State state;

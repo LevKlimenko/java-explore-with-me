@@ -30,11 +30,11 @@ public class EventFullDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
     UserShortDto initiator;
-    boolean paid;
+    Boolean paid;
     Long participantLimit;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime publishedOn;
-    boolean requestModeration;
+    Boolean requestModeration;
     State state;
     String title;
     Long views;
