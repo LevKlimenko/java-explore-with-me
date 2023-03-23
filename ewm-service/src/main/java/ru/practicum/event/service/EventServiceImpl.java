@@ -1,5 +1,6 @@
 package ru.practicum.event.service;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,26 +9,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.event.dto.UpdateEventDto;
+import ru.practicum.client.stat.StatClient;
+import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.QEvent;
 import ru.practicum.event.model.State;
-import ru.practicum.event.model.StateAction;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.ForbiddenException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.mapper.HitMapper;
+import ru.practicum.request.dto.RequestDto;
+import ru.practicum.request.mapper.RequestMapper;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.Status;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static ru.practicum.event.model.State.PUBLISHED;
+import static ru.practicum.event.model.State.*;
+import static ru.practicum.event.model.StateAction.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,6 +47,8 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
+    private final RequestRepository requestRepository;
+    private final StatClient statClient;
 
     /**
      * Private rules
@@ -65,7 +76,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto patch(Long userId, Long eventId, UpdateEventDto updateEventDto) {
+    public EventFullDto updateByOwner(Long userId, Long eventId, UpdateEventDto updateEventDto) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
         if (event.getState() == PUBLISHED) {
@@ -74,7 +85,17 @@ public class EventServiceImpl implements EventService {
         if (!event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("You're not owner for event id=" + eventId);
         }
-        return EventMapper.toEventFullDto(checkAndUpdateEvent(eventId, updateEventDto));
+        event = checkAndUpdateEvent(eventId, updateEventDto);
+        if (updateEventDto.getStateAction() != null) {
+            if (updateEventDto.getStateAction() == SEND_TO_REVIEW) {
+                event.setState(PENDING);
+            } else if (updateEventDto.getStateAction() == CANCEL_REVIEW) {
+                event.setState(CANCELED);
+            } else {
+                throw new BadRequestException("StateAction is not supported for this argument");
+            }
+        }
+        return EventMapper.toEventFullDto(event);
     }
 
     @Override
@@ -87,9 +108,158 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventFullDto(event);
     }
 
+    @Override
+    public List<RequestDto> requestsPatch(Long userId, Long eventId, EventRequestStatusUpdateRequest request) {
+        findUserOrGetThrow(userId);
+        Event event = findEventOrGetThrow(eventId);
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequest())) {
+            throw new ConflictException("The participant limit has been reached");
+        }
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw new ConflictException("Only initiator could patch requests");
+        }
+        Status upStatus = request.getStatus();
+        List<Request> updatedRequests = new ArrayList<>();
+        List<Request> requestsPending = requestRepository.findByIdInAndStatus(request.getRequestIds(), Status.PENDING);
+        for (Request rq : requestsPending) {
+            if (!rq.getEvent().getId().equals(eventId)) {
+                throw new ConflictException("Event and request don't match");
+            }
+            if (event.getParticipantLimit().equals(event.getConfirmedRequest())) {
+                throw new ConflictException("The participant limit has been reached");
+            }
+            if (upStatus.equals(Status.CONFIRMED)) {
+                rq.setStatus(upStatus);
+                event.setConfirmedRequest(event.getConfirmedRequest() + 1);
+            }
+            if (upStatus.equals(Status.REJECTED)) {
+                rq.setStatus(Status.REJECTED);
+            }
+            updatedRequests.add(rq);
+        }
+        return RequestMapper.toListEventShortDto(updatedRequests);
+    }
+
+    @Override
+    public List<RequestDto> getAllRequestsForEventId(Long userId, Long eventId) {
+        findUserOrGetThrow(userId);
+        Event event = findEventOrGetThrow(eventId);
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw new ConflictException("User with id=" + userId + " not initiator for eventId=" + eventId);
+        }
+        List<Request> requestsForEvent = requestRepository.findByEventIdAndStatus(eventId, Status.PENDING);
+        return RequestMapper.toListEventShortDto(requestsForEvent);
+    }
+
+
     /**
      * Admin rules
      */
+
+    @Override
+    public EventFullDto updateByAdmin(Long eventId, UpdateEventDto updateEventDto) {
+        Event event = findEventOrGetThrow(eventId);
+        if (event.getEventDate().isBefore(LocalDateTime.now().minusHours(1))) {
+            throw new ConflictException("You can't update the event because the start time is less than 1 hour ");
+        }
+        event = checkAndUpdateEvent(eventId, updateEventDto);
+        if (event.getState() == PENDING) {
+            if (updateEventDto.getStateAction() == PUBLISH_EVENT) {
+                event.setState(PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            }
+            if (updateEventDto.getStateAction() == REJECT_EVENT) {
+                event.setState(CANCELED);
+                event.setPublishedOn(null);
+            }
+        }
+        return EventMapper.toEventFullDto(event);
+    }
+
+    @Override
+    public List<EventFullDto> findByAdminWithParameters(List<Long> users, List<String> states, List<Long> categories,
+                                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size, SORT_BY_ASC);
+        QEvent qEvent = QEvent.event;
+        BooleanExpression expression = qEvent.id.isNotNull();
+        if (users != null && users.size() > 0) {
+            expression = expression.and(qEvent.id.in(users));
+        }
+        if (states != null && states.size() > 0) {
+            expression = expression.and(qEvent.state.in(states.stream()
+                    .map(State::valueOf)
+                    .collect(Collectors.toUnmodifiableList())));
+        }
+        if (categories != null && categories.size() > 0) {
+            expression = expression.and(qEvent.category.id.in(categories));
+        }
+        if (rangeStart != null) {
+            expression = expression.and(qEvent.eventDate.goe(rangeStart));
+        }
+        if (rangeEnd != null) {
+            expression = expression.and(qEvent.eventDate.loe(rangeEnd));
+        }
+        List<Event> events = eventRepository.findAll(expression, pageable).getContent();
+        return events.stream().map(EventMapper::toEventFullDto).collect(Collectors.toList());
+    }
+
+    /**
+     * Public rules
+     */
+
+    @Override
+    public List<EventFullDto> findAllByUserWithParameters(String text, List<Long> categories, Boolean paid,
+                                                          LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                          Boolean onlyAvailable, String sort, int from, int size,
+                                                          HttpServletRequest request) {
+        Sort sortBy = Sort.unsorted();
+        if (sort != null) {
+            if (sort.toUpperCase().equals("EVENT_DATE")) {
+                sortBy = Sort.by("eventDate");
+            }
+            if (sort.toUpperCase().equals("VIEWS")) {
+                sortBy = Sort.by("views");
+            } else {
+                throw new BadRequestException("Field: sort. Error: must be EVENT_DATE or VIEWS. Value: " + sort);
+            }
+        }
+        Pageable pageable = PageRequest.of(from / size, size, sortBy);
+        QEvent qEvent = QEvent.event;
+        BooleanExpression expression = qEvent.id.isNotNull().and(qEvent.state.eq(PUBLISHED));
+        if (text != null && !text.isEmpty()) {
+            expression = expression.and((qEvent.annotation.containsIgnoreCase(text))
+                    .or(qEvent.description.containsIgnoreCase(text)));
+        }
+        if (categories != null && categories.size() > 0) {
+            expression = expression.and(qEvent.category.id.in(categories));
+        }
+        if (paid != null) {
+            expression = expression.and(qEvent.paid.eq(paid));
+        }
+        if (rangeStart != null) {
+            expression = expression.and(qEvent.eventDate.goe(rangeStart));
+        }
+        if (rangeEnd != null) {
+            expression = expression.and(qEvent.eventDate.loe(rangeEnd));
+        }
+        if (onlyAvailable == Boolean.TRUE) {
+            expression = expression.and(qEvent.participantLimit.gt(qEvent.confirmedRequest));
+        }
+        List<Event> events = eventRepository.findAll(expression, pageable).getContent();
+        statClient.saveHit(HitMapper.toHitRequestDto(request));
+        return events.stream().map(EventMapper::toEventFullDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public EventFullDto findByIdByUser(Long id, HttpServletRequest request) {
+        Event event = findEventOrGetThrow(id);
+        if (!event.getState().equals(PUBLISHED)) {
+            throw new BadRequestException("Event with id=" + id + " not published");
+        }
+        statClient.saveHit(HitMapper.toHitRequestDto(request));
+        return EventMapper.toEventFullDto(event);
+    }
+
 
     private User findUserOrGetThrow(Long userId) {
         return userRepository.findById(userId).orElseThrow(
@@ -120,7 +290,7 @@ public class EventServiceImpl implements EventService {
         if (upEventDto.getCategory() != null) {
             event.setCategory(findCategoryOrGetThrow(upEventDto.getCategory()));
         }
-        if (upEventDto.getDescription() !=null) {
+        if (upEventDto.getDescription() != null) {
             event.setDescription(upEventDto.getDescription());
         }
         if (upEventDto.getEventDate() != null) {
@@ -138,15 +308,6 @@ public class EventServiceImpl implements EventService {
         }
         if (upEventDto.getRequestModeration() != null) {
             event.setRequestModeration(upEventDto.getRequestModeration());
-        }
-        if (upEventDto.getStateAction() != null) {
-            if (upEventDto.getStateAction() == StateAction.SEND_TO_REVIEW) {
-                event.setState(State.PENDING);
-            } else if (upEventDto.getStateAction() == StateAction.CANCEL_REVIEW) {
-                event.setState(State.CANCELED);
-            } else {
-                throw new BadRequestException("StateAction is not supported for this argument");
-            }
         }
         if (upEventDto.getTitle() != null) {
             event.setTitle(upEventDto.getTitle());
