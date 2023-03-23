@@ -22,7 +22,7 @@ public class EventFullDto {
     Long id;
     String annotation;
     CategoryDto category;
-    Long confirmedRequest;
+    Long confirmedRequests;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdOn;
     String description;
@@ -32,7 +32,7 @@ public class EventFullDto {
     UserShortDto initiator;
     Boolean paid;
     Long participantLimit;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime publishedOn;
     Boolean requestModeration;
     State state;

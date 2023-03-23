@@ -42,11 +42,12 @@ public class RequestServiceImpl implements RequestService {
         if (event.getState() != State.PUBLISHED) {
             throw new ConflictException("Can't add request for not published event");
         }
-        if (event.getParticipantLimit().equals(event.getConfirmedRequest())) {
+        if (event.getParticipantLimit()<=event.getConfirmedRequests()) {
             throw new ConflictException("Already max participant");
         }
         if (!event.getRequestModeration()) {
             statusReq = Status.CONFIRMED;
+            event.setConfirmedRequests(event.getConfirmedRequests()+1);
         }
         Request request = Request.builder()
                 .created(LocalDateTime.now())
@@ -67,7 +68,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<RequestDto> requestsForUser(Long userId) {
-        return null;
+        List<Request> requests = requestRepository.findAllByRequesterId(userId);
+        return RequestMapper.toListEventShortDto(requests);
     }
 
     private User findUserOrGetThrow(Long userId) {

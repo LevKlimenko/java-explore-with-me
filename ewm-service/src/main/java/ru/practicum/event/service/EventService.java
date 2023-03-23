@@ -25,7 +25,7 @@ public interface EventService {
 
     EventFullDto findByIdByUser(Long id, HttpServletRequest request);
 
-    List<RequestDto> requestsPatch(Long userId, Long eventId, EventRequestStatusUpdateRequest request);
+    List<RequestDto> patchRequestByInitiator(Long userId, Long eventId, RequestStatusUpdateDto request);
 
     List<RequestDto> getAllRequestsForEventId(Long userId, Long eventId);
 

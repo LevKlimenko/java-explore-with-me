@@ -6,12 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.service.RequestService;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -26,5 +25,19 @@ public class RequestController {
         RequestDto requestDto = requestService.save(userId, eventId);
         log.info("Request from userId={} to eventId={} have been added", userId, eventId);
         return new ResponseEntity<>(requestDto, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{userId}/requests")
+    public ResponseEntity<Object> getAllByUserId(@PathVariable Long userId){
+        List<RequestDto> requests = requestService.requestsForUser(userId);
+        log.info("Request for userId={} have been received", userId);
+        return new ResponseEntity<>(requests,HttpStatus.OK);
+    }
+
+    @PatchMapping("/{userId}/requests/{requestId}/cancel")
+    public ResponseEntity<Object> cancelRequestById(@PathVariable Long userId, @PathVariable Long requestId){
+        RequestDto request = requestService.cancel(userId, requestId);
+        log.info("Request for userId={} for requestId={} have been canceled", userId, requestId);
+        return new ResponseEntity<>(request,HttpStatus.OK);
     }
 }

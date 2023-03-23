@@ -109,10 +109,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<RequestDto> requestsPatch(Long userId, Long eventId, EventRequestStatusUpdateRequest request) {
+    public List<RequestDto> patchRequestByInitiator(Long userId, Long eventId, RequestStatusUpdateDto request) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequest())) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequests())) {
             throw new ConflictException("The participant limit has been reached");
         }
         if (!event.getInitiator().getId().equals(userId)) {
@@ -125,12 +125,12 @@ public class EventServiceImpl implements EventService {
             if (!rq.getEvent().getId().equals(eventId)) {
                 throw new ConflictException("Event and request don't match");
             }
-            if (event.getParticipantLimit().equals(event.getConfirmedRequest())) {
+            if (event.getParticipantLimit().equals(event.getConfirmedRequests())) {
                 throw new ConflictException("The participant limit has been reached");
             }
             if (upStatus.equals(Status.CONFIRMED)) {
                 rq.setStatus(upStatus);
-                event.setConfirmedRequest(event.getConfirmedRequest() + 1);
+                event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             }
             if (upStatus.equals(Status.REJECTED)) {
                 rq.setStatus(Status.REJECTED);
@@ -155,7 +155,7 @@ public class EventServiceImpl implements EventService {
     /**
      * Admin rules
      */
-
+    @Transactional
     @Override
     public EventFullDto updateByAdmin(Long eventId, UpdateEventDto updateEventDto) {
         Event event = findEventOrGetThrow(eventId);
@@ -168,7 +168,7 @@ public class EventServiceImpl implements EventService {
                 event.setState(PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             }
-            if (updateEventDto.getStateAction() == REJECT_EVENT) {
+            else if (updateEventDto.getStateAction() == REJECT_EVENT) {
                 event.setState(CANCELED);
                 event.setPublishedOn(null);
             }
@@ -214,10 +214,10 @@ public class EventServiceImpl implements EventService {
                                                           HttpServletRequest request) {
         Sort sortBy = Sort.unsorted();
         if (sort != null) {
-            if (sort.toUpperCase().equals("EVENT_DATE")) {
+            if (sort.equalsIgnoreCase("EVENT_DATE")) {
                 sortBy = Sort.by("eventDate");
             }
-            if (sort.toUpperCase().equals("VIEWS")) {
+            else if (sort.equalsIgnoreCase("VIEWS")) {
                 sortBy = Sort.by("views");
             } else {
                 throw new BadRequestException("Field: sort. Error: must be EVENT_DATE or VIEWS. Value: " + sort);
@@ -243,7 +243,7 @@ public class EventServiceImpl implements EventService {
             expression = expression.and(qEvent.eventDate.loe(rangeEnd));
         }
         if (onlyAvailable == Boolean.TRUE) {
-            expression = expression.and(qEvent.participantLimit.gt(qEvent.confirmedRequest));
+            expression = expression.and(qEvent.participantLimit.gt(qEvent.confirmedRequests));
         }
         List<Event> events = eventRepository.findAll(expression, pageable).getContent();
         statClient.saveHit(HitMapper.toHitRequestDto(request));
