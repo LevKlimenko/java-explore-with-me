@@ -38,7 +38,7 @@ public class AdminEventController {
                                                 @Valid @RequestParam(defaultValue = "10") @Positive int size) {
         List<EventFullDto> events = service.findByAdminWithParameters(users, states, categories, rangeStart, rangeEnd,
                 from, size);
-        log.info("Events for user admin with parameters have been received");
+        log.info("Events for admin with parameters have been received");
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
 

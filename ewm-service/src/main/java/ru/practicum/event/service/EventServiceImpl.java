@@ -167,8 +167,7 @@ public class EventServiceImpl implements EventService {
             if (updateEventDto.getStateAction() == PUBLISH_EVENT) {
                 event.setState(PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
-            }
-            else if (updateEventDto.getStateAction() == REJECT_EVENT) {
+            } else if (updateEventDto.getStateAction() == REJECT_EVENT) {
                 event.setState(CANCELED);
                 event.setPublishedOn(null);
             }
@@ -208,16 +207,16 @@ public class EventServiceImpl implements EventService {
      */
 
     @Override
-    public List<EventFullDto> findAllByUserWithParameters(String text, List<Long> categories, Boolean paid,
-                                                          LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                                          Boolean onlyAvailable, String sort, int from, int size,
-                                                          HttpServletRequest request) {
+    @Transactional
+    public List<EventShortDto> findAllByUserWithParameters(String text, List<Long> categories, Boolean paid,
+                                                           LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                           Boolean onlyAvailable, String sort, int from, int size,
+                                                           HttpServletRequest request) {
         Sort sortBy = Sort.unsorted();
         if (sort != null) {
             if (sort.equalsIgnoreCase("EVENT_DATE")) {
                 sortBy = Sort.by("eventDate");
-            }
-            else if (sort.equalsIgnoreCase("VIEWS")) {
+            } else if (sort.equalsIgnoreCase("VIEWS")) {
                 sortBy = Sort.by("views");
             } else {
                 throw new BadRequestException("Field: sort. Error: must be EVENT_DATE or VIEWS. Value: " + sort);
@@ -246,18 +245,27 @@ public class EventServiceImpl implements EventService {
             expression = expression.and(qEvent.participantLimit.gt(qEvent.confirmedRequests));
         }
         List<Event> events = eventRepository.findAll(expression, pageable).getContent();
-        statClient.saveHit(HitMapper.toHitRequestDto(request));
-        return events.stream().map(EventMapper::toEventFullDto).collect(Collectors.toList());
+        for (Event ev :
+                events) {
+            Long eventViews = ev.getViews();
+            ev.setViews(++eventViews);
+        }
+        //statClient.saveHit(HitMapper.toHitRequestDto(request));
+        return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public EventFullDto findByIdByUser(Long id, HttpServletRequest request) {
         Event event = findEventOrGetThrow(id);
         if (!event.getState().equals(PUBLISHED)) {
             throw new BadRequestException("Event with id=" + id + " not published");
         }
-        statClient.saveHit(HitMapper.toHitRequestDto(request));
+        Long eventViews = event.getViews();
+        event.setViews(++eventViews);
+      // statClient.saveHit(HitMapper.toHitRequestDto(request));
         return EventMapper.toEventFullDto(event);
+
     }
 
 
