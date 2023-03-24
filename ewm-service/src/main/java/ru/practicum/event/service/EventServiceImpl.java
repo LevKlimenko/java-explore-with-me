@@ -250,7 +250,7 @@ public class EventServiceImpl implements EventService {
             Long eventViews = ev.getViews();
             ev.setViews(++eventViews);
         }
-        //statClient.saveHit(HitMapper.toHitRequestDto(request));
+        statClient.saveHit(HitMapper.toHitRequestDto(request));
         return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
     }
 
@@ -263,7 +263,7 @@ public class EventServiceImpl implements EventService {
         }
         Long eventViews = event.getViews();
         event.setViews(++eventViews);
-      // statClient.saveHit(HitMapper.toHitRequestDto(request));
+       statClient.saveHit(HitMapper.toHitRequestDto(request));
         return EventMapper.toEventFullDto(event);
 
     }

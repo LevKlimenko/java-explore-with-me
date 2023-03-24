@@ -24,17 +24,17 @@ public class StatController {
     private final StatService hitService;
 
     @PostMapping("/hit")
-    public ResponseEntity<String> save(@RequestBody HitRequestDto hitDtoRequest, HttpServletRequest request) {
+    public ResponseEntity<Object> save(@RequestBody HitRequestDto hitDtoRequest, HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         hitService.save(StatMapper.toHit(hitDtoRequest), StatMapper.toApp(hitDtoRequest.getApp()), ip);
         log.info("Hit have been saved, HitApp = '{}', uri = '{}' from IP={}",
                 hitDtoRequest.getApp(), hitDtoRequest.getUri(), ip);
 
-        return new ResponseEntity<>("Information saved", HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<List<ViewStatsDto>> findAll(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+    public ResponseEntity<Object> findAll(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
                                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                                       @RequestParam(defaultValue = "false") Boolean unique,
                                                       @RequestParam(required = false) List<String> uris) {
