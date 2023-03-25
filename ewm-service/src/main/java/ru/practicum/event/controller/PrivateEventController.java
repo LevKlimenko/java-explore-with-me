@@ -59,7 +59,7 @@ public class PrivateEventController {
     @PatchMapping("/{userId}/events/{eventId}/requests")
     public ResponseEntity<Object> requestsPatch(@PathVariable Long userId, @PathVariable Long eventId,
                                                 @RequestBody RequestStatusUpdateDto request) {
-        List<RequestDto> requests = eventService.patchRequestByInitiator(userId, eventId, request);
+        EventRequestStatusUpdateResult requests = eventService.patchRequestByInitiator(userId, eventId, request);
         log.info("Requests have been updated");
         return new ResponseEntity<>(requests,HttpStatus.OK);
     }

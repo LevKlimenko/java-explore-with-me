@@ -69,7 +69,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<RequestDto> requestsForUser(Long userId) {
         List<Request> requests = requestRepository.findAllByRequesterId(userId);
-        return RequestMapper.toListEventShortDto(requests);
+        return RequestMapper.toListRequestDto(requests);
     }
 
     private User findUserOrGetThrow(Long userId) {

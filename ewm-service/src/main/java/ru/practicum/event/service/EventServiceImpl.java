@@ -32,7 +32,9 @@ import ru.practicum.user.repository.UserRepository;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.State.*;
@@ -109,7 +111,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<RequestDto> patchRequestByInitiator(Long userId, Long eventId, RequestStatusUpdateDto request) {
+    public EventRequestStatusUpdateResult patchRequestByInitiator(Long userId, Long eventId, RequestStatusUpdateDto request) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequests())) {
@@ -119,7 +121,8 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Only initiator could patch requests");
         }
         Status upStatus = request.getStatus();
-        List<Request> updatedRequests = new ArrayList<>();
+        List<Request> confirmedRequests = new ArrayList<>();
+        List<Request> rejectedRequests = new ArrayList<>();
         List<Request> requestsPending = requestRepository.findByIdInAndStatus(request.getRequestIds(), Status.PENDING);
         for (Request rq : requestsPending) {
             if (!rq.getEvent().getId().equals(eventId)) {
@@ -131,13 +134,17 @@ public class EventServiceImpl implements EventService {
             if (upStatus.equals(Status.CONFIRMED)) {
                 rq.setStatus(upStatus);
                 event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                confirmedRequests.add(rq);
             }
             if (upStatus.equals(Status.REJECTED)) {
                 rq.setStatus(Status.REJECTED);
+                rejectedRequests.add(rq);
             }
-            updatedRequests.add(rq);
         }
-        return RequestMapper.toListEventShortDto(updatedRequests);
+        return EventRequestStatusUpdateResult.builder()
+                .confirmedRequests(RequestMapper.toListRequestDto(confirmedRequests))
+                .rejectedRequests(RequestMapper.toListRequestDto(rejectedRequests))
+                .build();
     }
 
     @Override
@@ -148,7 +155,7 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("User with id=" + userId + " not initiator for eventId=" + eventId);
         }
         List<Request> requestsForEvent = requestRepository.findByEventIdAndStatus(eventId, Status.PENDING);
-        return RequestMapper.toListEventShortDto(requestsForEvent);
+        return RequestMapper.toListRequestDto(requestsForEvent);
     }
 
 
@@ -263,7 +270,7 @@ public class EventServiceImpl implements EventService {
         }
         Long eventViews = event.getViews();
         event.setViews(++eventViews);
-       statClient.saveHit(HitMapper.toHitRequestDto(request));
+        statClient.saveHit(HitMapper.toHitRequestDto(request));
         return EventMapper.toEventFullDto(event);
 
     }
