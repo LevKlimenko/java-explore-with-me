@@ -61,13 +61,13 @@ public class PrivateEventController {
                                                 @RequestBody RequestStatusUpdateDto request) {
         EventRequestStatusUpdateResult requests = eventService.patchRequestByInitiator(userId, eventId, request);
         log.info("Requests have been updated");
-        return new ResponseEntity<>(requests,HttpStatus.OK);
+        return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/events/{eventId}/requests")
-    public ResponseEntity<Object> requestsForEvent(@PathVariable Long userId, @PathVariable Long eventId){
+    public ResponseEntity<Object> requestsForEvent(@PathVariable Long userId, @PathVariable Long eventId) {
         List<RequestDto> requests = eventService.getAllRequestsForEventId(userId, eventId);
         log.info("Requests have been received");
-        return new ResponseEntity<>(requests,HttpStatus.OK);
+        return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 }

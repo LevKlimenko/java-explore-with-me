@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.beans.factory.annotation.Required;
 import ru.practicum.event.model.Location;
 import ru.practicum.event.model.StateAction;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data

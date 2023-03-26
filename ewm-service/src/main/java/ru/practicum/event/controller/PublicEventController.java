@@ -50,9 +50,9 @@ public class PublicEventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getEventByIdByUser(@PathVariable Long id, HttpServletRequest request){
-        EventFullDto event = service.findByIdByUser(id,request);
+    public ResponseEntity<Object> getEventByIdByUser(@PathVariable Long id, HttpServletRequest request) {
+        EventFullDto event = service.findByIdByUser(id, request);
         log.info("Event with id={} for user have been received", id);
-        return new ResponseEntity<>(event,HttpStatus.OK);
+        return new ResponseEntity<>(event, HttpStatus.OK);
     }
 }

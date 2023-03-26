@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class RequestMapper {
-    public static RequestDto toRequestDto(Request request){
+    public static RequestDto toRequestDto(Request request) {
         return RequestDto.builder()
                 .id(request.getId())
                 .created(request.getCreated())
@@ -18,7 +18,8 @@ public class RequestMapper {
                 .status(request.getStatus())
                 .build();
     }
-    public static List<RequestDto> toListRequestDto(List<Request> requests){
+
+    public static List<RequestDto> toListRequestDto(List<Request> requests) {
         return requests.stream().map(RequestMapper::toRequestDto).collect(Collectors.toList());
     }
 

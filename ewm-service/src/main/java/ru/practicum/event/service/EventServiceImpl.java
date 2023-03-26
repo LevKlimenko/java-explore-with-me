@@ -32,13 +32,13 @@ import ru.practicum.user.repository.UserRepository;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.State.*;
 import static ru.practicum.event.model.StateAction.*;
+import static ru.practicum.request.model.Status.CONFIRMED;
+import static ru.practicum.request.model.Status.REJECTED;
 
 @Service
 @Transactional(readOnly = true)
@@ -82,7 +82,7 @@ public class EventServiceImpl implements EventService {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
         if (event.getState() == PUBLISHED) {
-            throw new ConflictException("Illegal state for update event");
+            throw new ConflictException("Illegal state for update event. State=" + event.getState());
         }
         if (!event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("You're not owner for event id=" + eventId);
@@ -110,34 +110,42 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventFullDto(event);
     }
 
+    @Transactional
     @Override
     public EventRequestStatusUpdateResult patchRequestByInitiator(Long userId, Long eventId, RequestStatusUpdateDto request) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequests())) {
+       /* if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequests())) {
             throw new ConflictException("The participant limit has been reached");
-        }
+        }*/
         if (!event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Only initiator could patch requests");
         }
         Status upStatus = request.getStatus();
         List<Request> confirmedRequests = new ArrayList<>();
         List<Request> rejectedRequests = new ArrayList<>();
-        List<Request> requestsPending = requestRepository.findByIdInAndStatus(request.getRequestIds(), Status.PENDING);
+
+        List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
+            if (requestRepository.findById(rq.getId()).orElseThrow(
+                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                    .getStatus().equals(CONFIRMED)) {
+                throw new ConflictException("You can't change an already accepted request");
+            }
             if (!rq.getEvent().getId().equals(eventId)) {
                 throw new ConflictException("Event and request don't match");
             }
-            if (event.getParticipantLimit().equals(event.getConfirmedRequests())) {
+            if (event.getParticipantLimit() <= event.getConfirmedRequests()) {
                 throw new ConflictException("The participant limit has been reached");
             }
-            if (upStatus.equals(Status.CONFIRMED)) {
+            if (upStatus.equals(CONFIRMED)) {
                 rq.setStatus(upStatus);
                 event.setConfirmedRequests(event.getConfirmedRequests() + 1);
                 confirmedRequests.add(rq);
             }
-            if (upStatus.equals(Status.REJECTED)) {
-                rq.setStatus(Status.REJECTED);
+            if (upStatus.equals(REJECTED)) {
+
+                rq.setStatus(REJECTED);
                 rejectedRequests.add(rq);
             }
         }
@@ -166,12 +174,19 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto updateByAdmin(Long eventId, UpdateEventDto updateEventDto) {
         Event event = findEventOrGetThrow(eventId);
+        if (event.getState().equals(PUBLISHED)) {
+            throw new ConflictException("Event with id=" + eventId + " has already been published.You can't change it");
+        }
+        if (event.getState().equals(CANCELED)) {
+            throw new ConflictException("Event with id=" + eventId + " has already been canceled");
+        }
         if (event.getEventDate().isBefore(LocalDateTime.now().minusHours(1))) {
             throw new ConflictException("You can't update the event because the start time is less than 1 hour ");
         }
         event = checkAndUpdateEvent(eventId, updateEventDto);
         if (event.getState() == PENDING) {
             if (updateEventDto.getStateAction() == PUBLISH_EVENT) {
+
                 event.setState(PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (updateEventDto.getStateAction() == REJECT_EVENT) {
@@ -189,7 +204,7 @@ public class EventServiceImpl implements EventService {
         QEvent qEvent = QEvent.event;
         BooleanExpression expression = qEvent.id.isNotNull();
         if (users != null && users.size() > 0) {
-            expression = expression.and(qEvent.id.in(users));
+            expression = expression.and(qEvent.initiator.id.in(users));
         }
         if (states != null && states.size() > 0) {
             expression = expression.and(qEvent.state.in(states.stream()

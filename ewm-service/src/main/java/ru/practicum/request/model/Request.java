@@ -23,7 +23,7 @@ public class Request {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime created;
     @ManyToOne
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_id", nullable = false)
     Event event;
     @ManyToOne
     @JoinColumn(name = "requester_id")
