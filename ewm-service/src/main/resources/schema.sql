@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS users, categories, events, requests, compilations, comp-event;
+DROP TABLE IF EXISTS users, categories, events, requests, compilations, comp_event;
 
 CREATE TABLE IF NOT EXISTS users
 (
