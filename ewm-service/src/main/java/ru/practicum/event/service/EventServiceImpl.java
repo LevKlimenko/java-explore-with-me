@@ -124,14 +124,14 @@ public class EventServiceImpl implements EventService {
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
-                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                    () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
                     .getStatus().equals(CONFIRMED)) {
                 throw new ConflictException("You can't change an already accepted request");
             }
             if (!rq.getEvent().getId().equals(eventId)) {
                 throw new ConflictException("Event and request don't match");
             }
-            if (event.getParticipantLimit() <= event.getConfirmedRequests()) {
+            if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests()) {
                 throw new ConflictException("The participant limit has been reached");
             }
             if (upStatus.equals(CONFIRMED)) {
@@ -140,7 +140,6 @@ public class EventServiceImpl implements EventService {
                 confirmedRequests.add(rq);
             }
             if (upStatus.equals(REJECTED)) {
-
                 rq.setStatus(REJECTED);
                 rejectedRequests.add(rq);
             }
@@ -161,7 +160,6 @@ public class EventServiceImpl implements EventService {
         List<Request> requestsForEvent = requestRepository.findByEventIdAndStatus(eventId, Status.PENDING);
         return RequestMapper.toListRequestDto(requestsForEvent);
     }
-
 
     /**
      * Admin rules

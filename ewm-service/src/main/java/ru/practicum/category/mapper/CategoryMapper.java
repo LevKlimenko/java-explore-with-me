@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class CategoryMapper {
-
     public static CategoryDto toCategoryDto(Category category) {
         return CategoryDto.builder()
                 .id(category.getId())
