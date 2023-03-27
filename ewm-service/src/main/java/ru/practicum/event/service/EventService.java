@@ -9,8 +9,11 @@ import java.util.List;
 
 public interface EventService {
     EventFullDto saveByOwner(Long userId, NewEventDto newEventDto);
-    List<EventShortDto> eventsByOwner(Long id,int from,int size);
+
+    List<EventShortDto> eventsByOwner(Long id, int from, int size);
+
     EventFullDto updateByOwner(Long userId, Long eventId, UpdateEventDto updateEventDto);
+
     EventFullDto getByIdByOwner(Long userId, Long eventId);
 
     EventFullDto updateByAdmin(Long eventId, UpdateEventDto updateEventDto);
@@ -19,14 +22,13 @@ public interface EventService {
                                                  LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
 
     List<EventShortDto> findAllByUserWithParameters(String text, List<Long> categories, Boolean paid,
-                                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                                   Boolean onlyAvailable, String sort, int from, int size,
-                                                   HttpServletRequest request);
+                                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                    Boolean onlyAvailable, String sort, int from, int size,
+                                                    HttpServletRequest request);
 
     EventFullDto findByIdByUser(Long id, HttpServletRequest request);
 
     EventRequestStatusUpdateResult patchRequestByInitiator(Long userId, Long eventId, RequestStatusUpdateDto request);
 
     List<RequestDto> getAllRequestsForEventId(Long userId, Long eventId);
-
 }

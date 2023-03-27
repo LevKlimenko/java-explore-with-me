@@ -46,10 +46,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean deleteById(Long id) {
+    public void deleteById(Long id) {
         User user = UserMapper.toUser(findById(id));
         userRepository.deleteById(user.getId());
-        return true;
     }
 
     @Override

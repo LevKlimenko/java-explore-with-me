@@ -32,9 +32,7 @@ import ru.practicum.user.repository.UserRepository;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.State.*;
@@ -158,10 +156,10 @@ public class EventServiceImpl implements EventService {
         return RequestMapper.toListRequestDto(requestsForEvent);
     }
 
-
     /**
      * Admin rules
      */
+
     @Transactional
     @Override
     public EventFullDto updateByAdmin(Long eventId, UpdateEventDto updateEventDto) {
@@ -274,7 +272,6 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventFullDto(event);
 
     }
-
 
     private User findUserOrGetThrow(Long userId) {
         return userRepository.findById(userId).orElseThrow(

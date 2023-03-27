@@ -28,16 +28,16 @@ public class RequestController {
     }
 
     @GetMapping("/{userId}/requests")
-    public ResponseEntity<Object> getAllByUserId(@PathVariable Long userId){
+    public ResponseEntity<Object> getAllByUserId(@PathVariable Long userId) {
         List<RequestDto> requests = requestService.requestsForUser(userId);
         log.info("Request for userId={} have been received", userId);
-        return new ResponseEntity<>(requests,HttpStatus.OK);
+        return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
     @PatchMapping("/{userId}/requests/{requestId}/cancel")
-    public ResponseEntity<Object> cancelRequestById(@PathVariable Long userId, @PathVariable Long requestId){
+    public ResponseEntity<Object> cancelRequestById(@PathVariable Long userId, @PathVariable Long requestId) {
         RequestDto request = requestService.cancel(userId, requestId);
         log.info("Request for userId={} for requestId={} have been canceled", userId, requestId);
-        return new ResponseEntity<>(request,HttpStatus.OK);
+        return new ResponseEntity<>(request, HttpStatus.OK);
     }
 }

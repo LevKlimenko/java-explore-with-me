@@ -43,8 +43,4 @@ public class AdminCategoryController {
         log.info("Category with id={} has been deleted", id);
         return new ResponseEntity<>("Category with id=" + id + " has been deleted", HttpStatus.NO_CONTENT);
     }
-
-/*    CategoryDto update(Long id, Category category);
-
-    boolean delete(Long id);*/
 }
