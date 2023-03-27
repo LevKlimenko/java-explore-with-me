@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.exception.BadRequestException;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.service.RequestService;
 
@@ -22,6 +23,9 @@ public class RequestController {
 
     @PostMapping("/{userId}/requests")
     public ResponseEntity<Object> create(@PathVariable Long userId, @RequestParam Long eventId) {
+        if (eventId == null) {
+            throw new BadRequestException("Not found eventId");
+        }
         RequestDto requestDto = requestService.save(userId, eventId);
         log.info("Request from userId={} to eventId={} have been added", userId, eventId);
         return new ResponseEntity<>(requestDto, HttpStatus.CREATED);

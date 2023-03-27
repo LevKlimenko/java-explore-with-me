@@ -48,6 +48,7 @@ public class EventMapper {
                 .build();
     }
 
+
     public static List<EventShortDto> toListEventShortDto(List<Event> events) {
         return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
     }

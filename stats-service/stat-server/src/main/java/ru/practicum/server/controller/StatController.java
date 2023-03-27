@@ -35,9 +35,9 @@ public class StatController {
 
     @GetMapping("/stats")
     public ResponseEntity<Object> findAll(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
-                                                      @RequestParam(defaultValue = "false") Boolean unique,
-                                                      @RequestParam(required = false) List<String> uris) {
+                                          @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+                                          @RequestParam(defaultValue = "false") Boolean unique,
+                                          @RequestParam(required = false) List<String> uris) {
         List<ViewStatsDto> stats = hitService.findAll(start, end, unique, uris);
         log.info("Statistics for the period from {} to {} collected. Unique={}", start, end, unique);
         return new ResponseEntity<>(stats, HttpStatus.OK);

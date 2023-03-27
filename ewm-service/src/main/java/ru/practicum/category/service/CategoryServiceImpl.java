@@ -11,6 +11,8 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
@@ -19,8 +21,9 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
-    private final CategoryRepository repository;
     private static final Sort SORT_BY_ASC = Sort.by(Sort.Direction.ASC, "id");
+    private final CategoryRepository repository;
+    private final EventRepository eventRepository;
 
     @Transactional
     @Override
@@ -48,6 +51,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean deleteById(Long id) {
         Category category = findCategoryOrThrow(id);
+        if (eventRepository.getEventByCategoryId(id).isPresent()) {
+            throw new ConflictException("Can't delete category with events");
+        }
         repository.deleteById(category.getId());
         return true;
     }
