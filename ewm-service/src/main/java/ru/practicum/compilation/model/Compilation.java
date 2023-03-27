@@ -1,6 +1,7 @@
 package ru.practicum.compilation.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.event.model.Event;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

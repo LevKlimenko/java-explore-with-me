@@ -23,15 +23,15 @@ public class AdminCompilationController {
     private final CompilationService service;
 
     @PostMapping
-    public ResponseEntity<Object> addNew(@RequestBody @Valid NewCompilationDto newCompilationDto) {
+    public ResponseEntity<CompilationDto> addNew(@RequestBody @Valid NewCompilationDto newCompilationDto) {
         CompilationDto newCompilation = service.save(newCompilationDto);
         log.info("Compilation have been add with name={} and id={}", newCompilation.getTitle(), newCompilation.getId());
         return new ResponseEntity<>(newCompilation, HttpStatus.CREATED);
     }
 
     @PatchMapping("/{compId}")
-    public ResponseEntity<Object> patchCompilation(@PathVariable Long compId,
-                                                   @RequestBody @Valid UpdateCompilationRequest request) {
+    public ResponseEntity<CompilationDto> patchCompilation(@PathVariable Long compId,
+                                                           @RequestBody @Valid UpdateCompilationRequest request) {
         CompilationDto upCompilation = service.update(compId, request);
         log.info("Compilation with id={} have been updated", upCompilation.getId());
         return new ResponseEntity<>(upCompilation, HttpStatus.OK);

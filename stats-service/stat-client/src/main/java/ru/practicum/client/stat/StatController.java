@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.HitRequestDto;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,9 +23,9 @@ public class StatController {
     private final StatClient statClient;
 
     @PostMapping(path = "/hit")
-    public ResponseEntity<Object> save(@RequestBody @Valid HitRequestDto hitRequestDto) {
+    public ResponseEntity<Object> save(@RequestBody @Valid HttpServletRequest request) {
         log.info("Сохранение данных");
-        statClient.saveHit(hitRequestDto);
+        statClient.saveHit(request);
         return new ResponseEntity<>("Information saved", HttpStatus.CREATED);
     }
 

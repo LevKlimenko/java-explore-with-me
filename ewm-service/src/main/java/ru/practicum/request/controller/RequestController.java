@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.exception.BadRequestException;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.service.RequestService;
 
@@ -22,24 +21,21 @@ public class RequestController {
     private final RequestService requestService;
 
     @PostMapping("/{userId}/requests")
-    public ResponseEntity<Object> create(@PathVariable Long userId, @RequestParam Long eventId) {
-        if (eventId == null) {
-            throw new BadRequestException("Not found eventId");
-        }
+    public ResponseEntity<RequestDto> create(@PathVariable Long userId, @RequestParam Long eventId) {
         RequestDto requestDto = requestService.save(userId, eventId);
         log.info("Request from userId={} to eventId={} have been added", userId, eventId);
         return new ResponseEntity<>(requestDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{userId}/requests")
-    public ResponseEntity<Object> getAllByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<RequestDto>> getAllByUserId(@PathVariable Long userId) {
         List<RequestDto> requests = requestService.requestsForUser(userId);
         log.info("Request for userId={} have been received", userId);
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
     @PatchMapping("/{userId}/requests/{requestId}/cancel")
-    public ResponseEntity<Object> cancelRequestById(@PathVariable Long userId, @PathVariable Long requestId) {
+    public ResponseEntity<RequestDto> cancelRequestById(@PathVariable Long userId, @PathVariable Long requestId) {
         RequestDto request = requestService.cancel(userId, requestId);
         log.info("Request for userId={} for requestId={} have been canceled", userId, requestId);
         return new ResponseEntity<>(request, HttpStatus.OK);

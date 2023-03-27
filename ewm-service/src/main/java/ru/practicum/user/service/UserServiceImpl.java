@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.mapper.UserMapper;
@@ -15,7 +14,6 @@ import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -58,20 +56,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> findAll(List<String> ids, int from, int size) {
+    public List<UserDto> findAll(List<Long> ids, int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size, SORT_BY_ASC);
         if (ids == null || ids.isEmpty()) {
             return UserMapper.toListUserDto(userRepository.getAll(pageable).getContent());
         } else if (ids.size() == 1) {
-            long idsFrom = parseAndCheckIds(ids.get(0));
+            long idsFrom = ids.get(0);
             return UserMapper.toListUserDto(userRepository.getAllByIdIsAfterOrderById(idsFrom, pageable));
         } else {
-            long idsStart = parseAndCheckIds(ids.get(0));
-            long idsEnd = parseAndCheckIds(ids.get(1));
-            if (idsStart > idsEnd) {
-                throw new BadRequestException("ids Start should be greater than idsEnd. idsStart=" + idsStart +
-                        "  idsEnd=" + idsEnd);
-            }
+            long idsStart = ids.get(0);
+            long idsEnd = ids.get(1);
             return UserMapper.toListUserDto(
                     userRepository.getAllByIdIsAfterAndIdIsBeforeOrderByIdAsc(idsStart, idsEnd, pageable));
         }
@@ -87,14 +81,5 @@ public class UserServiceImpl implements UserService {
             findUser.setEmail(user.getEmail());
         }
         return findUser;
-    }
-
-    private Long parseAndCheckIds(String ids) {
-        long parsedIds = Optional.of(Long.parseLong(ids)).orElseThrow(
-                () -> new BadRequestException("ids must be Number"));
-        if (parsedIds < 0) {
-            throw new BadRequestException("Ids should be more 0");
-        }
-        return parsedIds;
     }
 }

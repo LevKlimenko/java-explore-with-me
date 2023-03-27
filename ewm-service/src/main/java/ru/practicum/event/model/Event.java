@@ -32,7 +32,6 @@ public class Event {
     LocalDateTime createdOn;
     @Column
     String description;
-    @Embedded
     @AttributeOverrides(value = {
             @AttributeOverride(name = "lat", column = @Column(name = "lat")),
             @AttributeOverride(name = "lon", column = @Column(name = "lon"))
@@ -49,7 +48,6 @@ public class Event {
     @Column
     Long participantLimit;
     @Column
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime publishedOn;
     @Column
     Boolean requestModeration;

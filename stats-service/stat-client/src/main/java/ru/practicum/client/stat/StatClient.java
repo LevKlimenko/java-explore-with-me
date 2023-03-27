@@ -10,18 +10,29 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.client.client.BaseClient;
 import ru.practicum.dto.HitRequestDto;
 
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class StatClient extends BaseClient {
 
+    @Value("${app.name}")
+    String app;
+
     @Autowired
     public StatClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
-        super(builder.uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl)).requestFactory(HttpComponentsClientHttpRequestFactory::new).build());
+        super(builder.uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                .requestFactory(HttpComponentsClientHttpRequestFactory::new).build());
     }
 
-    public ResponseEntity<Object> saveHit(HitRequestDto hitRequestDto) {
+    public ResponseEntity<Object> saveHit(HttpServletRequest request) {
+        HitRequestDto hitRequestDto = new HitRequestDto();
+        hitRequestDto.setApp(app);
+        hitRequestDto.setUri(request.getRequestURI());
+        hitRequestDto.setTimestamp(LocalDateTime.now());
+        hitRequestDto.setIp(request.getRemoteAddr());
         return post("/hit", hitRequestDto);
     }
 

@@ -39,8 +39,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @Override
     public CategoryDto update(Long id, Category category) {
+        Category oldCategory = findCategoryOrThrow(id);
         try {
-            return CategoryMapper.toCategoryDto(checkUpdate(id, category));
+            oldCategory.setName(category.getName());
+            return CategoryMapper.toCategoryDto(oldCategory);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Category with name: " + category.getName() +
                     " is already exist.");
@@ -67,14 +69,6 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDto> getAll(int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size, SORT_BY_ASC);
         return CategoryMapper.toCategoryDtoList(repository.findAll(pageable).getContent());
-    }
-
-    private Category checkUpdate(Long id, Category category) {
-        Category upCat = findCategoryOrThrow(id);
-        if (category.getName() != null && !category.getName().isBlank()) {
-            upCat.setName(category.getName());
-        }
-        return upCat;
     }
 
     private Category findCategoryOrThrow(Long id) {

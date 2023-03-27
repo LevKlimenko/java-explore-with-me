@@ -13,7 +13,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

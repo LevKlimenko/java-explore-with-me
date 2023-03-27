@@ -6,7 +6,9 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.event.model.Location;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,7 +18,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewEventDto {
     @Length(min = 20, max = 2000)
-    @NotNull
+    @NotBlank
     String annotation;
     @NotNull
     Long category;
@@ -28,9 +30,11 @@ public class NewEventDto {
     LocalDateTime eventDate;
     @NotNull
     Location location;
-    Boolean paid;
-    Long participantLimit;
-    Boolean requestModeration;
+    boolean paid;
+    @PositiveOrZero
+    long participantLimit;
+    boolean requestModeration;
+    @NotBlank
     @Length(min = 3, max = 120)
     String title;
 }

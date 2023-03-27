@@ -3,8 +3,6 @@ package ru.practicum.user.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotBlank;
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -12,6 +10,5 @@ import javax.validation.constraints.NotBlank;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserShortDto {
     Long id;
-    @NotBlank
     String name;
 }

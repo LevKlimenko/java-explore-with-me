@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.service.CompilationService;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -27,16 +26,16 @@ public class PublicCompilationController {
     private final CompilationService service;
 
     @GetMapping
-    public ResponseEntity<Object> getByParameters(@RequestParam(defaultValue = "true") Boolean pinned,
-                                                  @Valid @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                  @Valid @RequestParam(defaultValue = "10") @Positive int size) {
+    public ResponseEntity<List<CompilationDto>> getByParameters(@RequestParam(defaultValue = "true") Boolean pinned,
+                                                                @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                                @RequestParam(defaultValue = "10") @Positive int size) {
         List<CompilationDto> listCompilationDto = service.getByParameters(pinned, from, size);
         log.info("The list of all categories has been received");
         return new ResponseEntity<>(listCompilationDto, HttpStatus.OK);
     }
 
     @GetMapping("/{compId}")
-    public ResponseEntity<Object> getById(@PathVariable Long compId) {
+    public ResponseEntity<CompilationDto> getById(@PathVariable Long compId) {
         CompilationDto compilationDto = service.getById(compId);
         log.info("Category with id={} have been received", compId);
         return new ResponseEntity<>(compilationDto, HttpStatus.OK);

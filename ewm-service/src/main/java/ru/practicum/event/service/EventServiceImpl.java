@@ -20,7 +20,6 @@ import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.ForbiddenException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.mapper.HitMapper;
 import ru.practicum.request.dto.RequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
@@ -64,7 +63,7 @@ public class EventServiceImpl implements EventService {
         Category category = findCategoryOrGetThrow(newEventDto.getCategory());
         Event event = new Event(0L, newEventDto.getAnnotation(), category, 0L, LocalDateTime.now(),
                 newEventDto.getDescription(), newEventDto.getLocation(), newEventDto.getEventDate(), owner,
-                newEventDto.getPaid(), newEventDto.getParticipantLimit(), null, newEventDto.getRequestModeration(),
+                newEventDto.isPaid(), newEventDto.getParticipantLimit(), null, newEventDto.isRequestModeration(),
                 State.PENDING, newEventDto.getTitle(), 0L);
         return EventMapper.toEventFullDto(eventRepository.save(event));
     }
@@ -124,7 +123,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
-                    () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
                     .getStatus().equals(CONFIRMED)) {
                 throw new ConflictException("You can't change an already accepted request");
             }
@@ -267,7 +266,7 @@ public class EventServiceImpl implements EventService {
             Long eventViews = ev.getViews();
             ev.setViews(++eventViews);
         }
-        statClient.saveHit(HitMapper.toHitRequestDto(request));
+        statClient.saveHit(request);
         return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
     }
 
@@ -280,7 +279,7 @@ public class EventServiceImpl implements EventService {
         }
         Long eventViews = event.getViews();
         event.setViews(++eventViews);
-        statClient.saveHit(HitMapper.toHitRequestDto(request));
+        statClient.saveHit(request);
         return EventMapper.toEventFullDto(event);
 
     }
@@ -308,13 +307,13 @@ public class EventServiceImpl implements EventService {
 
     private Event checkAndUpdateEvent(Long eventId, UpdateEventDto upEventDto) {
         Event event = findEventOrGetThrow(eventId);
-        if (upEventDto.getAnnotation() != null) {
+        if (upEventDto.getAnnotation() != null && !upEventDto.getAnnotation().isBlank()) {
             event.setAnnotation(upEventDto.getAnnotation());
         }
         if (upEventDto.getCategory() != null) {
             event.setCategory(findCategoryOrGetThrow(upEventDto.getCategory()));
         }
-        if (upEventDto.getDescription() != null) {
+        if (upEventDto.getDescription() != null && !upEventDto.getDescription().isBlank()) {
             event.setDescription(upEventDto.getDescription());
         }
         if (upEventDto.getEventDate() != null) {
@@ -333,7 +332,7 @@ public class EventServiceImpl implements EventService {
         if (upEventDto.getRequestModeration() != null) {
             event.setRequestModeration(upEventDto.getRequestModeration());
         }
-        if (upEventDto.getTitle() != null) {
+        if (upEventDto.getTitle() != null && !upEventDto.getTitle().isBlank()) {
             event.setTitle(upEventDto.getTitle());
         }
         return event;

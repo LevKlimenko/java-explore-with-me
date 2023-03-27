@@ -14,5 +14,5 @@ public interface UserService {
 
     UserDto findById(Long id);
 
-    List<UserDto> findAll(List<String> ids, int from, int size);
+    List<UserDto> findAll(List<Long> ids, int from, int size);
 }

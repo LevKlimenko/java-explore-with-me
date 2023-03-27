@@ -3,7 +3,8 @@ package ru.practicum.category.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryRequestDto {
-    @NotNull
+    @NotBlank
+    @Size(max = 255)
     String name;
 }

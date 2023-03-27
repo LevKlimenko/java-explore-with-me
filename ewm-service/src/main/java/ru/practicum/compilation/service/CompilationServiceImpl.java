@@ -30,7 +30,11 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional
     public CompilationDto save(NewCompilationDto newCompilationDto) {
         Compilation compilation = CompilationMapper.toNewCompilation(newCompilationDto);
-        compilation.setEvents(new HashSet<>(eventRepository.getEventByIdIn(newCompilationDto.getEvents())));
+        if (newCompilationDto.getEvents() != null && newCompilationDto.getEvents().size() != 0) {
+            compilation.setEvents(new HashSet<>(eventRepository.getEventByIdIn(newCompilationDto.getEvents())));
+        } else {
+            compilation.setEvents(new HashSet<>());
+        }
         return CompilationMapper.toCompilationDto(repository.save(compilation));
     }
 
@@ -70,7 +74,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     private Compilation checkAndUpdateCompilation(Long id, UpdateCompilationRequest request) {
         Compilation oldComp = getCompilationOrElseThrowNotFound(id);
-        if (request.getTitle() != null) {
+        if (request.getTitle() != null && !request.getTitle().isBlank()) {
             oldComp.setTitle(request.getTitle());
         }
         if (request.getPinned() != null) {
