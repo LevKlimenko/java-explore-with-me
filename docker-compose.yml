@@ -26,11 +26,12 @@ services:
 
   ewm-service:
     build: ewm-service
-    container_name: ewm-server-container
+    container_name: ewm-service-container
     ports:
       - "8080:8080"
     depends_on:
       - ewm-db
+      - stats-server
     environment:
       - SPRING_DATA_SOURCE=jdbc://postgresql://ewm-db:5432/ewm-db
       - POSTGRES_USER=ewm
