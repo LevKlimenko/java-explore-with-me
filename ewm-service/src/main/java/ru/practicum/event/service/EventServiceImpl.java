@@ -115,16 +115,12 @@ public class EventServiceImpl implements EventService {
     public EventRequestStatusUpdateResult patchRequestByInitiator(Long userId, Long eventId, RequestStatusUpdateDto request) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
-       /* if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequests())) {
-            throw new ConflictException("The participant limit has been reached");
-        }*/
         if (!event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Only initiator could patch requests");
         }
         Status upStatus = request.getStatus();
         List<Request> confirmedRequests = new ArrayList<>();
         List<Request> rejectedRequests = new ArrayList<>();
-
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
@@ -170,6 +166,7 @@ public class EventServiceImpl implements EventService {
     /**
      * Admin rules
      */
+
     @Transactional
     @Override
     public EventFullDto updateByAdmin(Long eventId, UpdateEventDto updateEventDto) {
@@ -289,7 +286,6 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventFullDto(event);
 
     }
-
 
     private User findUserOrGetThrow(Long userId) {
         return userRepository.findById(userId).orElseThrow(

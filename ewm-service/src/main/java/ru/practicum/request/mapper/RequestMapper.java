@@ -22,5 +22,4 @@ public class RequestMapper {
     public static List<RequestDto> toListRequestDto(List<Request> requests) {
         return requests.stream().map(RequestMapper::toRequestDto).collect(Collectors.toList());
     }
-
 }

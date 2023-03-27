@@ -31,5 +31,4 @@ public interface EventService {
     EventRequestStatusUpdateResult patchRequestByInitiator(Long userId, Long eventId, RequestStatusUpdateDto request);
 
     List<RequestDto> getAllRequestsForEventId(Long userId, Long eventId);
-
 }

@@ -20,5 +20,4 @@ public class Category {
     Long id;
     @Column
     String name;
-
 }
