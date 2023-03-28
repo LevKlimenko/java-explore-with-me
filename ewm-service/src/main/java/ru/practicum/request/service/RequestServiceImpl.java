@@ -42,12 +42,12 @@ public class RequestServiceImpl implements RequestService {
         if (event.getState() != State.PUBLISHED) {
             throw new ConflictException("Can't add request for not published event");
         }
-        if (event.getParticipantLimit() <= event.getConfirmedRequests()) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit()
+                .equals(requestRepository.countRequestByEventIdAndStatusEquals(eventId, Status.CONFIRMED))) {
             throw new ConflictException("Already max participant");
         }
         if (!event.getRequestModeration()) {
             statusReq = Status.CONFIRMED;
-            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
         }
         Request request = Request.builder()
                 .created(LocalDateTime.now())

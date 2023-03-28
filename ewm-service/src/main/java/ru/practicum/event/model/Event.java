@@ -25,8 +25,7 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     Category category;
-    @Column(name = "confirmed_requests")
-    Long confirmedRequests;
+
     @Column(name = "created_on")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdOn;
@@ -56,7 +55,9 @@ public class Event {
     State state;
     @Column(nullable = false)
     String title;
-    @Column
+    @Transient
+    Long confirmedRequests;
+    @Transient
     Long views;
 
     @Override

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.client.stat.StatClient;
+import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
@@ -30,10 +31,12 @@ import ru.practicum.user.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 import static ru.practicum.event.model.State.*;
 import static ru.practicum.event.model.StateAction.*;
 import static ru.practicum.request.model.Status.CONFIRMED;
@@ -45,6 +48,7 @@ import static ru.practicum.request.model.Status.REJECTED;
 public class EventServiceImpl implements EventService {
     private static final Sort SORT_BY_DESC = Sort.by(Sort.Direction.DESC, "id");
     private static final Sort SORT_BY_ASC = Sort.by(Sort.Direction.ASC, "id");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
@@ -61,10 +65,10 @@ public class EventServiceImpl implements EventService {
         checkEventDateTimeIsAfter2HoursFromNow(newEventDto.getEventDate());
         User owner = findUserOrGetThrow(userId);
         Category category = findCategoryOrGetThrow(newEventDto.getCategory());
-        Event event = new Event(0L, newEventDto.getAnnotation(), category, 0L, LocalDateTime.now(),
+        Event event = new Event(0L, newEventDto.getAnnotation(), category, LocalDateTime.now(),
                 newEventDto.getDescription(), newEventDto.getLocation(), newEventDto.getEventDate(), owner,
                 newEventDto.isPaid(), newEventDto.getParticipantLimit(), null, newEventDto.isRequestModeration(),
-                State.PENDING, newEventDto.getTitle(), 0L);
+                State.PENDING, newEventDto.getTitle(), 0L, 0L);
         return EventMapper.toEventFullDto(eventRepository.save(event));
     }
 
@@ -123,7 +127,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
-                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                    () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
                     .getStatus().equals(CONFIRMED)) {
                 throw new ConflictException("You can't change an already accepted request");
             }
@@ -257,15 +261,13 @@ public class EventServiceImpl implements EventService {
         if (rangeEnd != null) {
             expression = expression.and(qEvent.eventDate.loe(rangeEnd));
         }
-        if (onlyAvailable == Boolean.TRUE) {
-            expression = expression.and(qEvent.participantLimit.gt(qEvent.confirmedRequests));
-        }
         List<Event> events = eventRepository.findAll(expression, pageable).getContent();
-        for (Event ev :
-                events) {
-            Long eventViews = ev.getViews();
-            ev.setViews(++eventViews);
+        findConfirmedRequest(events);
+        if (onlyAvailable) {
+            events = events.stream().filter(event ->
+                    event.getParticipantLimit() > event.getConfirmedRequests()).collect(Collectors.toList());
         }
+        findViews(events);
         statClient.saveHit(request);
         return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
     }
@@ -277,8 +279,8 @@ public class EventServiceImpl implements EventService {
         if (!event.getState().equals(PUBLISHED)) {
             throw new BadRequestException("Event with id=" + id + " not published");
         }
-        Long eventViews = event.getViews();
-        event.setViews(++eventViews);
+        findViews(List.of(event));
+        findConfirmedRequest(List.of(event));
         statClient.saveHit(request);
         return EventMapper.toEventFullDto(event);
 
@@ -303,6 +305,23 @@ public class EventServiceImpl implements EventService {
         if (time.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ConflictException("Event time should be after 2 hours from now");
         }
+    }
+
+    private void findConfirmedRequest(List<Event> events) {
+        Map<Event, Long> requests = requestRepository.findAllByEventInAndStatusEquals(events, CONFIRMED)
+                .stream()
+                .collect(groupingBy(Request::getEvent, counting()));
+        events.forEach(event -> event.setConfirmedRequests(requests.get(event)));
+    }
+
+    private void findViews(List<Event> events) {
+        Set<Long> eventsId = events.stream().map(Event::getId).collect(Collectors.toSet());
+        String start = timeToString(events.stream()
+                .min(Comparator.comparing(Event::getCreatedOn)).get().getCreatedOn());
+        String end = timeToString(LocalDateTime.now());
+        Map<Long, Long> views = statClient.getViews(eventsId, start, end).stream()
+                .collect(Collectors.toMap(v -> Long.parseLong(v.getUri().substring(8)), ViewStatsDto::getHits));
+        events.forEach(event -> event.setViews(views.getOrDefault(event.getId(), 0L)));
     }
 
     private Event checkAndUpdateEvent(Long eventId, UpdateEventDto upEventDto) {
@@ -336,5 +355,9 @@ public class EventServiceImpl implements EventService {
             event.setTitle(upEventDto.getTitle());
         }
         return event;
+    }
+
+    private String timeToString(LocalDateTime dateTime) {
+        return dateTime.format(FORMATTER);
     }
 }
