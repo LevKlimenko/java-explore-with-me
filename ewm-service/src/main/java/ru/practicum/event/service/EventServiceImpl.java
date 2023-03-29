@@ -124,10 +124,12 @@ public class EventServiceImpl implements EventService {
         Status upStatus = request.getStatus();
         List<Request> confirmedRequests = new ArrayList<>();
         List<Request> rejectedRequests = new ArrayList<>();
+        Long confirmedRequestCount = requestRepository.countRequestByEventIdAndStatusEquals(eventId, CONFIRMED);
+        event.setConfirmedRequests(confirmedRequestCount);
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
-                    () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
                     .getStatus().equals(CONFIRMED)) {
                 throw new ConflictException("You can't change an already accepted request");
             }
@@ -184,7 +186,6 @@ public class EventServiceImpl implements EventService {
         event = checkAndUpdateEvent(eventId, updateEventDto);
         if (event.getState() == PENDING) {
             if (updateEventDto.getStateAction() == PUBLISH_EVENT) {
-
                 event.setState(PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (updateEventDto.getStateAction() == REJECT_EVENT) {
