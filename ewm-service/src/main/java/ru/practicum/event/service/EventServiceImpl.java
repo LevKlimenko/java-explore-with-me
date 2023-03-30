@@ -240,7 +240,7 @@ public class EventServiceImpl implements EventService {
             } else if (sort.equalsIgnoreCase("VIEWS")) {
                 sortBy = Sort.by("views");
             } else {
-                throw new BadRequestException("Field: sort. Error: must be EVENT_DATE or VIEWS. Value: " + sort);
+                throw new BadRequestException("Field: sort. Error: must be EVENT_DATE or VIEWS. Value:" + sort);
             }
         }
         Pageable pageable = PageRequest.of(from / size, size, sortBy);
