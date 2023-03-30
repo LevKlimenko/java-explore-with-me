@@ -60,15 +60,8 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(from / size, size, SORT_BY_ASC);
         if (ids == null || ids.isEmpty()) {
             return UserMapper.toListUserDto(userRepository.getAll(pageable).getContent());
-        } else if (ids.size() == 1) {
-            long idsFrom = ids.get(0);
-            return UserMapper.toListUserDto(userRepository.getAllByIdIsAfterOrderById(idsFrom, pageable));
-        } else {
-            long idsStart = ids.get(0);
-            long idsEnd = ids.get(1);
-            return UserMapper.toListUserDto(
-                    userRepository.getAllByIdIsAfterAndIdIsBeforeOrderByIdAsc(idsStart, idsEnd, pageable));
-        }
+        } else
+            return UserMapper.toListUserDto(userRepository.getAllByIdIn(ids, pageable));
     }
 
     private User checkUpdate(Long id, User user) {
