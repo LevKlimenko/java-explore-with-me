@@ -39,6 +39,6 @@ public class AdminCategoryController {
     public ResponseEntity<Object> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         log.info("Category with id={} has been deleted", id);
-        return new ResponseEntity<>("Category with id=" + id + " has been deleted", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
