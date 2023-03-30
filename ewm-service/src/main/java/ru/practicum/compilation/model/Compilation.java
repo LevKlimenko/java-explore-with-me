@@ -19,9 +19,9 @@ public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column
+    @Column(nullable = false)
     String title;
-    @Column
+    @Column(nullable = false)
     Boolean pinned;
     @ManyToMany
     @JoinTable(name = "comp_event",

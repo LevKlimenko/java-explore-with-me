@@ -29,11 +29,10 @@ public class Event {
     @Column(name = "created_on")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdOn;
-    @Column
     String description;
     @AttributeOverrides(value = {
-            @AttributeOverride(name = "lat", column = @Column(name = "lat")),
-            @AttributeOverride(name = "lon", column = @Column(name = "lon"))
+            @AttributeOverride(name = "lat", column = @Column(name = "lat", nullable = false)),
+            @AttributeOverride(name = "lon", column = @Column(name = "lon", nullable = false))
     })
     Location location;
     @Column(nullable = false)
@@ -44,13 +43,10 @@ public class Event {
     User initiator;
     @Column(nullable = false)
     Boolean paid;
-    @Column
     Long participantLimit;
-    @Column
     LocalDateTime publishedOn;
-    @Column
+    @Column(nullable = false)
     Boolean requestModeration;
-    @Column
     @Enumerated(EnumType.STRING)
     State state;
     @Column(nullable = false)

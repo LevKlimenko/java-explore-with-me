@@ -19,16 +19,15 @@ public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column
+    @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime created;
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     Event event;
     @ManyToOne
-    @JoinColumn(name = "requester_id")
+    @JoinColumn(name = "requester_id", nullable = false)
     User requester;
-    @Column
     @Enumerated(EnumType.STRING)
     Status status;
 }

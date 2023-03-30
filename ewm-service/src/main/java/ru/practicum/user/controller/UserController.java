@@ -61,6 +61,6 @@ public class UserController {
     public ResponseEntity<Object> delete(@PathVariable Long id) {
         userService.deleteById(id);
         log.info("User with id={} have been deleted", id);
-        return new ResponseEntity<>("User with id=" + id + " have been deleted", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
