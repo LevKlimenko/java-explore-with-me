@@ -12,7 +12,7 @@ import java.util.Set;
 public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPredicateExecutor<Event> {
     List<Event> getAllByInitiatorId(Long id, Pageable pageable);
 
-    Optional<Event> getEventByCategoryId(Long id);
+    Optional<Event> findFirstByCategoryId(Long id);
 
     Set<Event> getEventByIdIn(Set<Long> eventsId);
 }

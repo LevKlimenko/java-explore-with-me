@@ -53,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean deleteById(Long id) {
         Category category = findCategoryOrThrow(id);
-        if (eventRepository.getEventByCategoryId(id).isPresent()) {
+        if (eventRepository.findFirstByCategoryId(id).isPresent()) {
             throw new ConflictException("Can't delete category with events");
         }
         repository.deleteById(category.getId());
