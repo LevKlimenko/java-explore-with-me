@@ -12,11 +12,11 @@ public interface EventService {
 
     List<EventShortDto> eventsByOwner(Long id, int from, int size);
 
-    EventFullDto updateByOwner(Long userId, Long eventId, UpdateEventDto updateEventDto);
+    EventFullDto updateByOwner(Long userId, Long eventId, UpdateUserEventDto updateEventDto);
 
     EventFullDto getByIdByOwner(Long userId, Long eventId);
 
-    EventFullDto updateByAdmin(Long eventId, UpdateEventDto updateEventDto);
+    EventFullDto updateByAdmin(Long eventId, UpdateAdminEventDto updateEventDto);
 
     List<EventFullDto> findByAdminWithParameters(List<Long> users, List<String> states, List<Long> categories,
                                                  LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);

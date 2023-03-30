@@ -37,8 +37,11 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
+import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.PUBLISH_EVENT;
+import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.REJECT_EVENT;
+import static ru.practicum.event.dto.UpdateUserEventDto.StateAction.CANCEL_REVIEW;
+import static ru.practicum.event.dto.UpdateUserEventDto.StateAction.SEND_TO_REVIEW;
 import static ru.practicum.event.model.State.*;
-import static ru.practicum.event.model.StateAction.*;
 import static ru.practicum.request.model.Status.CONFIRMED;
 import static ru.practicum.request.model.Status.REJECTED;
 
@@ -81,7 +84,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateByOwner(Long userId, Long eventId, UpdateEventDto updateEventDto) {
+    public EventFullDto updateByOwner(Long userId, Long eventId, UpdateUserEventDto updateEventDto) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
         if (event.getState() == PUBLISHED) {
@@ -129,7 +132,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
-                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                    () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
                     .getStatus().equals(CONFIRMED)) {
                 throw new ConflictException("You can't change an already accepted request");
             }
@@ -172,7 +175,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateByAdmin(Long eventId, UpdateEventDto updateEventDto) {
+    public EventFullDto updateByAdmin(Long eventId, UpdateAdminEventDto updateEventDto) {
         Event event = findEventOrGetThrow(eventId);
         if (event.getState().equals(PUBLISHED)) {
             throw new ConflictException("Event with id=" + eventId + " has already been published.You can't change it");

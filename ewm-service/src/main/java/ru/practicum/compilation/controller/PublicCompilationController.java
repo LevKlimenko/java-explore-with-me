@@ -26,7 +26,7 @@ public class PublicCompilationController {
     private final CompilationService service;
 
     @GetMapping
-    public ResponseEntity<List<CompilationDto>> getByParameters(@RequestParam(defaultValue = "true") Boolean pinned,
+    public ResponseEntity<List<CompilationDto>> getByParameters(@RequestParam(required = false) Boolean pinned,
                                                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                                                 @RequestParam(defaultValue = "10") @Positive int size) {
         List<CompilationDto> listCompilationDto = service.getByParameters(pinned, from, size);

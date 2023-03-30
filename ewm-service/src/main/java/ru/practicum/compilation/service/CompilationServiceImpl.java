@@ -61,9 +61,14 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public List<CompilationDto> getByParameters(Boolean pinned, int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size);
-        QCompilation qCompilation = QCompilation.compilation;
-        BooleanExpression expression = qCompilation.pinned.eq(pinned);
-        List<Compilation> compilations = repository.findAll(expression, pageable).getContent();
+        List<Compilation> compilations;
+        if (pinned != null) {
+            QCompilation qCompilation = QCompilation.compilation;
+            BooleanExpression expression = qCompilation.pinned.eq(pinned);
+            compilations = repository.findAll(expression, pageable).getContent();
+        } else {
+            compilations = repository.findAll(pageable).getContent();
+        }
         return CompilationMapper.toListCompilationDto(compilations);
     }
 

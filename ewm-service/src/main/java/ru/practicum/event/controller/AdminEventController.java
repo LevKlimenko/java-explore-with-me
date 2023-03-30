@@ -9,9 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.UpdateEventDto;
+import ru.practicum.event.dto.UpdateAdminEventDto;
 import ru.practicum.event.service.EventService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -42,7 +43,8 @@ public class AdminEventController {
     }
 
     @PatchMapping("/{eventId}")
-    public ResponseEntity<EventFullDto> patchEventByAdmin(@PathVariable Long eventId, @RequestBody UpdateEventDto updateEventDto) {
+    public ResponseEntity<EventFullDto> patchEventByAdmin(@PathVariable Long eventId,
+                                                          @Valid @RequestBody UpdateAdminEventDto updateEventDto) {
         EventFullDto event = service.updateByAdmin(eventId, updateEventDto);
         log.info("Event with Id={}  have been updated by Admin", eventId);
         return new ResponseEntity<>(event, HttpStatus.OK);

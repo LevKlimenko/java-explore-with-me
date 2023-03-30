@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.event.model.Location;
-import ru.practicum.event.model.StateAction;
 
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
@@ -28,7 +27,6 @@ public class UpdateEventDto {
     @PositiveOrZero
     Long participantLimit;
     Boolean requestModeration;
-    StateAction stateAction;
     @Size(min = 3, max = 120)
     String title;
 }
