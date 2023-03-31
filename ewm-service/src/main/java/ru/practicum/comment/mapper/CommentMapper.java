@@ -28,11 +28,11 @@ public class CommentMapper {
 
     }
 
-    List<CommentShortDto> toCommentShortDtoList(List<Comment> comments) {
+    public static List<CommentShortDto> toCommentShortDtoList(List<Comment> comments) {
         return comments.stream().map(CommentMapper::toCommentShortDto).collect(Collectors.toList());
     }
 
-    List<CommentFullDto> toCommentFullDtoList(List<Comment> comments) {
+    public static List<CommentFullDto> toCommentFullDtoList(List<Comment> comments) {
         return comments.stream().map(CommentMapper::toCommentFullDto).collect(Collectors.toList());
     }
 }

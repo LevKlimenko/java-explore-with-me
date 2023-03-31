@@ -2,11 +2,14 @@ package ru.practicum.event.mapper;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.category.mapper.CategoryMapper;
+import ru.practicum.comment.mapper.CommentMapper;
+import ru.practicum.comment.model.Comment;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.user.mapper.UserMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,8 @@ public class EventMapper {
                 .views(event.getViews())
                 .commentingClosed(event.getCommentingClosed())
                 .commentModeration(event.getCommentModeration())
+                .comments(CommentMapper.toCommentFullDtoList(
+                        event.getComments()==null ? new ArrayList<>() : event.getComments()))
                 .build();
     }
 
@@ -53,4 +58,5 @@ public class EventMapper {
     public static List<EventShortDto> toListEventShortDto(List<Event> events) {
         return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
     }
+
 }
