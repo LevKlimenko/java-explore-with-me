@@ -10,6 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.client.stat.StatClient;
+import ru.practicum.comment.dto.CommentShortDto;
+import ru.practicum.comment.model.Comment;
+import ru.practicum.comment.model.CommentStatus;
+import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
@@ -56,6 +60,7 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
+    private final CommentRepository commentRepository;
     private final StatClient statClient;
 
     /**
@@ -70,8 +75,9 @@ public class EventServiceImpl implements EventService {
         Category category = findCategoryOrGetThrow(newEventDto.getCategory());
         Event event = new Event(0L, newEventDto.getAnnotation(), category, LocalDateTime.now(),
                 newEventDto.getDescription(), newEventDto.getLocation(), newEventDto.getEventDate(), owner,
-                newEventDto.isPaid(), newEventDto.getParticipantLimit(), null, newEventDto.isRequestModeration(),
-                State.PENDING, newEventDto.getTitle(), 0L, 0L);
+                newEventDto.isPaid(), newEventDto.getParticipantLimit(), null,
+                newEventDto.isRequestModeration(), State.PENDING, newEventDto.getTitle(), false,
+                false, 0L, 0L, List.of());
         return EventMapper.toEventFullDto(eventRepository.save(event));
     }
 
@@ -271,6 +277,7 @@ public class EventServiceImpl implements EventService {
             events = events.stream().filter(event ->
                     event.getParticipantLimit() > event.getConfirmedRequests()).collect(Collectors.toList());
         }
+        findConfirmedComments(events);
         findViews(events);
         statClient.saveHit(request);
         return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
@@ -284,6 +291,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException("Event with id=" + id + " not published");
         }
         findViews(List.of(event));
+        findConfirmedComments(List.of(event));
         findConfirmedRequest(List.of(event));
         statClient.saveHit(request);
         return EventMapper.toEventFullDto(event);
@@ -316,6 +324,14 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .collect(groupingBy(Request::getEvent, counting()));
         events.forEach(event -> event.setConfirmedRequests(requests.get(event)));
+    }
+
+    private void findConfirmedComments(List<Event> events){
+        Map<Event, List<Comment>> comments =
+                commentRepository.getAllByEventInAndStatusEquals(events, CommentStatus.PUBLISHED)
+                .stream()
+                .collect(groupingBy(Comment::getEvent));
+        events.forEach(event -> event.setComments(comments.get(event)));
     }
 
     private void findViews(List<Event> events) {
@@ -357,6 +373,12 @@ public class EventServiceImpl implements EventService {
         }
         if (upEventDto.getTitle() != null && !upEventDto.getTitle().isBlank()) {
             event.setTitle(upEventDto.getTitle());
+        }
+        if (upEventDto.getCommentingClosed() != null) {
+            event.setCommentingClosed(upEventDto.getCommentingClosed());
+        }
+        if (upEventDto.getCommentModeration() != null) {
+            event.setCommentModeration(upEventDto.getCommentModeration());
         }
         return event;
     }

@@ -29,4 +29,6 @@ public class UpdateEventDto {
     Boolean requestModeration;
     @Size(min = 3, max = 120)
     String title;
+    Boolean commentModeration;
+    Boolean commentingClosed;
 }

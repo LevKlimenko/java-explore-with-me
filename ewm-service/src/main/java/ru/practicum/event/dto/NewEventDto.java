@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.event.model.Location;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
@@ -37,4 +38,6 @@ public class NewEventDto {
     @NotBlank
     @Length(min = 3, max = 120)
     String title;
+    boolean commentModeration;
+    boolean commentingClosed;
 }

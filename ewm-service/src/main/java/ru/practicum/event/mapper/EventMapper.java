@@ -31,6 +31,8 @@ public class EventMapper {
                 .state(event.getState())
                 .title(event.getTitle())
                 .views(event.getViews())
+                .commentingClosed(event.getCommentingClosed())
+                .commentModeration(event.getCommentModeration())
                 .build();
     }
 

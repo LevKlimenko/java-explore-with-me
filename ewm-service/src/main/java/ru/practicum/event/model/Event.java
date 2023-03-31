@@ -1,12 +1,15 @@
 package ru.practicum.event.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.category.model.Category;
+import ru.practicum.comment.model.Comment;
 import ru.practicum.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -16,6 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,10 +55,16 @@ public class Event {
     State state;
     @Column(nullable = false)
     String title;
+    @Column(name = "comment_moderation", nullable = false)
+    Boolean commentModeration;
+    @Column(name = "comment_close", nullable = false)
+    Boolean commentingClosed;
     @Transient
     Long confirmedRequests;
     @Transient
     Long views;
+    @Transient
+    List<Comment> comments;
 
     @Override
     public boolean equals(Object o) {
