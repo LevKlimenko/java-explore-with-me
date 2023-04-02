@@ -3,6 +3,9 @@ package ru.practicum.comment.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.comment.dto.CommentFullDto;
@@ -13,6 +16,7 @@ import ru.practicum.comment.model.Comment;
 import ru.practicum.comment.model.CommentStatus;
 import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
@@ -31,11 +35,19 @@ public class CommentServiceImpl implements CommentService {
     final EventRepository eventRepository;
     final CommentRepository commentRepository;
 
+    /**
+     * User Controller
+     */
+
+    @Transactional
     @Override
     public CommentFullDto add(Long eventId, Long userId, CommentIncomingDto incomingDto) {
         User user = findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
-        if (event.getCommentingClosed()){
+        if (!event.getState().equals(State.PUBLISHED)) {
+            throw new ConflictException("Can't add a comment to an event that is not published");
+        }
+        if (event.getCommentingClosed()) {
             throw new ConflictException("Can't add a comment to an event that is closed for comment");
         }
         Comment comment = new Comment();
@@ -43,43 +55,140 @@ public class CommentServiceImpl implements CommentService {
         comment.setUser(user);
         comment.setEvent(event);
         comment.setText(incomingDto.getText());
-        if (event.getCommentModeration()){
+        if (event.getCommentModeration()) {
             comment.setStatus(CommentStatus.ON_MODERATION);
-        }else {
+        } else {
             comment.setStatus(CommentStatus.PUBLISHED);
         }
         return CommentMapper.toCommentFullDto(commentRepository.save(comment));
     }
 
+    @Transactional
     @Override
-    public CommentFullDto updateOwner(Long userId, Long commentId, CommentIncomingDto incomingDto) {
-        return null;
+    public CommentFullDto updateByOwner(Long userId, Long commentId, CommentIncomingDto incomingDto) {
+        User user = findUserOrGetThrow(userId);
+        Comment comment = findCommentOrGetThrow(commentId);
+        if (!comment.getUser().equals(user)) {
+            throw new ConflictException("You're not owner for comment id=" + commentId);
+        }
+        Event event = comment.getEvent();
+        if (event.getCommentingClosed()) {
+            throw new ConflictException("You can't change a comment in an event that is closed for comment");
+        }
+        if (event.getCommentModeration()) {
+            comment.setStatus(CommentStatus.ON_MODERATION);
+        }
+        if (incomingDto.getText() != null && !incomingDto.getText().isBlank()) {
+            comment.setText(incomingDto.getText());
+        }
+        return CommentMapper.toCommentFullDto(comment);
+    }
+
+    @Transactional
+    @Override
+    public void delete(Long userId, Long commentId) {
+        Comment comment = findCommentOrGetThrow(commentId);
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new ConflictException("You're not owner for comment id=" + commentId);
+        }
+        commentRepository.delete(comment);
     }
 
     @Override
-    public CommentFullDto updateAdmin(Long commentId, CommentIncomingDto incomingDto) {
-        return null;
+    public List<CommentShortDto> findByOwnerId(Long userId, String typeSort, String directionSort, int from, int size) {
+        findUserOrGetThrow(userId);
+        Pageable pageable = getSortFromParam(typeSort, directionSort, from, size);
+        return CommentMapper.toCommentShortDtoList(commentRepository.getAllByUserId(userId, pageable));
+    }
+
+    /**
+     * Admin controller
+     */
+
+    @Transactional
+    @Override
+    public void deleteByIdByAdmin(Long commentId) {
+        findCommentOrGetThrow(commentId);
+        commentRepository.deleteById(commentId);
+    }
+
+    @Transactional
+    @Override
+    public CommentFullDto updateTextByAdmin(Long commentId, CommentIncomingDto incomingDto) {
+        Comment comment = findCommentOrGetThrow(commentId);
+        if (incomingDto.getText() != null && !incomingDto.getText().isBlank()) {
+            comment.setText(incomingDto.getText());
+        }
+        return CommentMapper.toCommentFullDto(comment);
+    }
+
+    @Transactional
+    @Override
+    public CommentFullDto approveCommentByAdmin(Long commentId) {
+        Comment comment = findCommentOrGetThrow(commentId);
+        if (comment.getStatus().equals(CommentStatus.PUBLISHED)) {
+            throw new ConflictException("The comment has already been published");
+        }
+        comment.setStatus(CommentStatus.PUBLISHED);
+        return CommentMapper.toCommentFullDto(comment);
     }
 
     @Override
-    public void delete(Long commentId) {
-
+    public List<CommentFullDto> getAllCommentsForEventIdOnModeration(Long eventId, String directSort, int from, int size) {
+        findEventOrGetThrow(eventId);
+        String sortedBy = "date";
+        Pageable pageable = getSortFromParam(sortedBy, directSort, from, size);
+        return CommentMapper.toCommentFullDtoList(
+                commentRepository.getAllByEventIdAndStatusEquals(eventId, CommentStatus.ON_MODERATION, pageable));
     }
 
     @Override
-    public CommentFullDto findById(Long commentId) {
-        return null;
+    public List<CommentFullDto> getAllCommentsForEventId(Long eventId, String typeSort, String directionSort,
+                                                         int from, int size) {
+        findEventOrGetThrow(eventId);
+        Pageable pageable = getSortFromParam(typeSort, directionSort, from, size);
+        return CommentMapper.toCommentFullDtoList(commentRepository.getAllByEventId(eventId, pageable));
     }
 
     @Override
-    public List<CommentShortDto> findByOwnerId(Long userId) {
-        return null;
+    public List<CommentFullDto> getAllCommentsOnModeration(String directSort, int from, int size) {
+        String sortedBy = "date";
+        Pageable pageable = getSortFromParam(sortedBy, directSort, from, size);
+        return CommentMapper.toCommentFullDtoList(
+                commentRepository.getAllByStatusEquals(CommentStatus.ON_MODERATION, pageable));
+    }
+
+    /**
+     * Public controller
+     */
+
+    @Override
+    public List<CommentShortDto> findByOwnerIdFromUser(Long userId, String typeSort, String directionSort,
+                                                       int from, int size) {
+        findUserOrGetThrow(userId);
+        Pageable pageable = getSortFromParam(typeSort, directionSort, from, size);
+        return CommentMapper.toCommentShortDtoList(
+                commentRepository.getAllByUserIdAndStatusEquals(userId, CommentStatus.PUBLISHED, pageable));
     }
 
     @Override
-    public List<CommentShortDto> findByEventId(Long eventId) {
-        return null;
+    public List<CommentShortDto> findByEventIdFromUser(Long eventId, String typeSort, String directionSort,
+                                                       int from, int size) {
+        findEventOrGetThrow(eventId);
+        Pageable pageable = getSortFromParam(typeSort, directionSort, from, size);
+        return CommentMapper.toCommentShortDtoList(
+                commentRepository.getAllByEventIdAndStatusEquals(eventId, CommentStatus.PUBLISHED, pageable));
     }
+
+    @Override
+    public CommentFullDto findByIdFromUser(Long commentId) {
+        Comment comment = findCommentOrGetThrow(commentId);
+        if (comment.getStatus().equals(CommentStatus.ON_MODERATION)) {
+            throw new ConflictException("Comment with id=" + commentId + " is under moderation");
+        }
+        return CommentMapper.toCommentFullDto(comment);
+    }
+
 
     private User findUserOrGetThrow(Long userId) {
         return userRepository.findById(userId).orElseThrow(
@@ -89,5 +198,28 @@ public class CommentServiceImpl implements CommentService {
     private Event findEventOrGetThrow(Long eventId) {
         return eventRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Event with id=" + eventId + " not found"));
+    }
+
+    private Comment findCommentOrGetThrow(Long commentId) {
+        return commentRepository.findById(commentId).orElseThrow(
+                () -> new NotFoundException("Comment with id=" + commentId + " not found"));
+    }
+
+    private Pageable getSortFromParam(String typeSort, String directionSort, int from, int size) {
+        Sort sort;
+        if (typeSort.equalsIgnoreCase("date")) {
+            if (directionSort.equalsIgnoreCase("desc")) {
+                sort = Sort.by(Sort.Direction.DESC, "createdOn");
+            } else {
+                sort = Sort.by(Sort.Direction.ASC, "createdOn");
+            }
+        } else {
+            if (directionSort.equalsIgnoreCase("desc")) {
+                sort = Sort.by(Sort.Direction.DESC, "id");
+            } else {
+                sort = Sort.by(Sort.Direction.ASC, "id");
+            }
+        }
+        return PageRequest.of(from / size, size, sort);
     }
 }

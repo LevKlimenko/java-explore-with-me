@@ -7,18 +7,32 @@ import ru.practicum.comment.dto.CommentShortDto;
 import java.util.List;
 
 public interface CommentService {
-    CommentFullDto add( Long eventId, Long userId, CommentIncomingDto incomingDto);
+    CommentFullDto add(Long eventId, Long userId, CommentIncomingDto incomingDto);
 
-    CommentFullDto updateOwner(Long userId, Long commentId, CommentIncomingDto incomingDto);
+    CommentFullDto updateByOwner(Long userId, Long commentId, CommentIncomingDto incomingDto);
 
-    CommentFullDto updateAdmin(Long commentId, CommentIncomingDto incomingDto);
+    CommentFullDto updateTextByAdmin(Long commentId, CommentIncomingDto incomingDto);
 
-    void delete(Long commentId);
+    List<CommentShortDto> findByOwnerId(Long userId, String typeSort, String directionSort, int from, int size);
 
-    CommentFullDto findById(Long commentId);
+    void deleteByIdByAdmin(Long commentId);
 
-    List<CommentShortDto> findByOwnerId(Long userId);
+    void delete(Long userId, Long commentId);
 
-    List<CommentShortDto> findByEventId(Long eventId);
+    CommentFullDto approveCommentByAdmin(Long commentId);
 
+    List<CommentFullDto> getAllCommentsForEventIdOnModeration(Long eventId, String directSort, int from, int size);
+
+    List<CommentFullDto> getAllCommentsForEventId(Long eventId, String typeSort, String directionSort,
+                                                  int from, int size);
+
+    List<CommentFullDto> getAllCommentsOnModeration(String directSort, int from, int size);
+
+    List<CommentShortDto> findByOwnerIdFromUser(Long userId, String typeSort,
+                                                String directionSort, int from, int size);
+
+    List<CommentShortDto> findByEventIdFromUser(Long eventId, String typeSort,
+                                                String directionSort, int from, int size);
+
+    CommentFullDto findByIdFromUser(Long commentId);
 }

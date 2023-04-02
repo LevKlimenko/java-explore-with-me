@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.client.stat.StatClient;
-import ru.practicum.comment.dto.CommentShortDto;
 import ru.practicum.comment.model.Comment;
 import ru.practicum.comment.model.CommentStatus;
 import ru.practicum.comment.repository.CommentRepository;
@@ -138,7 +137,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
-                    () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
                     .getStatus().equals(CONFIRMED)) {
                 throw new ConflictException("You can't change an already accepted request");
             }
@@ -326,11 +325,11 @@ public class EventServiceImpl implements EventService {
         events.forEach(event -> event.setConfirmedRequests(requests.get(event)));
     }
 
-    private void findConfirmedComments(List<Event> events){
+    private void findConfirmedComments(List<Event> events) {
         Map<Event, List<Comment>> comments =
                 commentRepository.getAllByEventInAndStatusEquals(events, CommentStatus.PUBLISHED)
-                .stream()
-                .collect(groupingBy(Comment::getEvent));
+                        .stream()
+                        .collect(groupingBy(Comment::getEvent));
         events.forEach(event -> event.setComments(comments.get(event)));
     }
 
