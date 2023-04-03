@@ -294,7 +294,7 @@ public class EventServiceImpl implements EventService {
             events = events.stream().filter(event ->
                     event.getParticipantLimit() > event.getConfirmedRequests()).collect(Collectors.toList());
         }
-        findConfirmedComments(events);
+       // findConfirmedComments(events);
         findViews(events);
         statClient.saveHit(request);
         return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
@@ -308,7 +308,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException("Event with id=" + id + " not published");
         }
         findViews(List.of(event));
-        findConfirmedComments(List.of(event));
+        //findConfirmedComments(List.of(event));
         findConfirmedRequest(List.of(event));
         statClient.saveHit(request);
         return EventMapper.toEventFullDtoForUser(event);

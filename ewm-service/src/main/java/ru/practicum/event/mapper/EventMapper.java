@@ -77,8 +77,8 @@ public class EventMapper {
                 .paid(event.getPaid())
                 .title(event.getTitle())
                 .views(event.getViews())
-                .comments(CommentMapper.toCommentShortDtoList(
-                        event.getComments() == null ? new ArrayList<>() : event.getComments()))
+               // .comments(CommentMapper.toCommentShortDtoList(
+                    //    event.getComments() == null ? new ArrayList<>() : event.getComments()))
                 .build();
     }
 
