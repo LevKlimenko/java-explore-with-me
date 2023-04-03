@@ -19,7 +19,6 @@ public class CommentMapper {
                 .text(comment.getText())
                 .status(comment.getStatus())
                 .build();
-
     }
 
     public static CommentShortDto toCommentShortDto(Comment comment) {
@@ -29,7 +28,6 @@ public class CommentMapper {
                 .authorName(comment.getUser().getName())
                 .text(comment.getText())
                 .build();
-
     }
 
     public static List<CommentShortDto> toCommentShortDtoList(List<Comment> comments) {

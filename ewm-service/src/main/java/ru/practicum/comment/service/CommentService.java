@@ -13,7 +13,7 @@ public interface CommentService {
 
     CommentFullDto updateTextByAdmin(Long commentId, CommentIncomingDto incomingDto);
 
-    List<CommentShortDto> findByOwnerId(Long userId, String typeSort, String directionSort, int from, int size);
+    List<CommentFullDto> findByOwnerId(Long userId, String typeSort, String directionSort, int from, int size);
 
     void deleteByIdByAdmin(Long commentId);
 

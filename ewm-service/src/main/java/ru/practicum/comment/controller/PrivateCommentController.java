@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.comment.dto.CommentFullDto;
 import ru.practicum.comment.dto.CommentIncomingDto;
-import ru.practicum.comment.dto.CommentShortDto;
 import ru.practicum.comment.service.CommentService;
 
 import javax.validation.Valid;
@@ -51,12 +50,12 @@ public class PrivateCommentController {
     }
 
     @GetMapping("/users/{userId}/comments")
-    public ResponseEntity<List<CommentShortDto>> getAllByOwner(@PathVariable @Positive Long userId,
-                                                               @RequestParam(defaultValue = "id") String sortBy,
-                                                               @RequestParam(defaultValue = "asc") String direction,
-                                                               @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                               @RequestParam(defaultValue = "10") @Positive int size) {
-        List<CommentShortDto> comments = service.findByOwnerId(userId, sortBy, direction, from, size);
+    public ResponseEntity<List<CommentFullDto>> getAllByOwner(@PathVariable @Positive Long userId,
+                                                              @RequestParam(defaultValue = "id") String sortBy,
+                                                              @RequestParam(defaultValue = "asc") String direction,
+                                                              @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                              @RequestParam(defaultValue = "10") @Positive int size) {
+        List<CommentFullDto> comments = service.findByOwnerId(userId, sortBy, direction, from, size);
         log.info("Comments for User id={} have been received", userId);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }

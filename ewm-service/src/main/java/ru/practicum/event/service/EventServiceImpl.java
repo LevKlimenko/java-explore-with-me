@@ -68,16 +68,16 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto saveByOwner(Long userId, NewEventDto newEventDto) {
+    public EventFullDtoForUser saveByOwner(Long userId, NewEventDto newEventDto) {
         checkEventDateTimeIsAfter2HoursFromNow(newEventDto.getEventDate());
         User owner = findUserOrGetThrow(userId);
         Category category = findCategoryOrGetThrow(newEventDto.getCategory());
         Event event = new Event(0L, newEventDto.getAnnotation(), category, LocalDateTime.now(),
                 newEventDto.getDescription(), newEventDto.getLocation(), newEventDto.getEventDate(), owner,
                 newEventDto.isPaid(), newEventDto.getParticipantLimit(), null,
-                newEventDto.isRequestModeration(), State.PENDING, newEventDto.getTitle(), false,
-                false, 0L, 0L, List.of());
-        return EventMapper.toEventFullDto(eventRepository.save(event));
+                newEventDto.isRequestModeration(), State.PENDING, newEventDto.getTitle(), newEventDto.isCommentModeration(),
+                newEventDto.isCommentingClosed(), 0L, 0L, List.of());
+        return EventMapper.toEventFullDtoForUser(eventRepository.save(event));
     }
 
     @Override
@@ -89,7 +89,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateByOwner(Long userId, Long eventId, UpdateUserEventDto updateEventDto) {
+    public EventFullDtoForUser updateByOwner(Long userId, Long eventId, UpdateUserEventDto updateEventDto) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
         if (event.getState() == PUBLISHED) {
@@ -108,17 +108,17 @@ public class EventServiceImpl implements EventService {
                 throw new BadRequestException("StateAction is not supported for this argument");
             }
         }
-        return EventMapper.toEventFullDto(event);
+        return EventMapper.toEventFullDtoForUser(event);
     }
 
     @Override
-    public EventFullDto getByIdByOwner(Long userId, Long eventId) {
+    public EventFullDtoForUser getByIdByOwner(Long userId, Long eventId) {
         User user = findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
         if (!event.getInitiator().getId().equals(user.getId())) {
             throw new ForbiddenException("User with id=" + userId + " not owner for event with id=" + eventId);
         }
-        return EventMapper.toEventFullDto(event);
+        return EventMapper.toEventFullDtoForUser(event);
     }
 
     @Transactional
@@ -137,7 +137,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
-                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                    () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
                     .getStatus().equals(CONFIRMED)) {
                 throw new ConflictException("You can't change an already accepted request");
             }
@@ -180,7 +180,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateByAdmin(Long eventId, UpdateAdminEventDto updateEventDto) {
+    public EventFullDtoForAdmin updateByAdmin(Long eventId, UpdateAdminEventDto updateEventDto) {
         Event event = findEventOrGetThrow(eventId);
         if (event.getState().equals(PUBLISHED)) {
             throw new ConflictException("Event with id=" + eventId + " has already been published.You can't change it");
@@ -201,12 +201,29 @@ public class EventServiceImpl implements EventService {
                 event.setPublishedOn(null);
             }
         }
-        return EventMapper.toEventFullDto(event);
+        findAllCommentsForAdmin(List.of(event));
+        return EventMapper.toEventFullDtoForAdmin(event);
+    }
+
+    @Transactional
+    @Override
+    public EventFullDtoForAdmin updateModerationByAdmin(Long eventId, UpdateAdminModerationDto updateDto) {
+        Event event = findEventOrGetThrow(eventId);
+        if (updateDto.getCommentingClosed() != null) {
+            event.setCommentingClosed(updateDto.getCommentingClosed());
+        }
+        if (updateDto.getCommentModeration() != null) {
+            event.setCommentModeration(updateDto.getCommentModeration());
+        }
+        findAllCommentsForAdmin(List.of(event));
+        return EventMapper.toEventFullDtoForAdmin(event);
     }
 
     @Override
-    public List<EventFullDto> findByAdminWithParameters(List<Long> users, List<String> states, List<Long> categories,
-                                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+    public List<EventFullDtoForAdmin> findByAdminWithParameters(List<Long> users, List<String> states,
+                                                                List<Long> categories,
+                                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                                int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size, SORT_BY_ASC);
         QEvent qEvent = QEvent.event;
         BooleanExpression expression = qEvent.id.isNotNull();
@@ -228,7 +245,8 @@ public class EventServiceImpl implements EventService {
             expression = expression.and(qEvent.eventDate.loe(rangeEnd));
         }
         List<Event> events = eventRepository.findAll(expression, pageable).getContent();
-        return events.stream().map(EventMapper::toEventFullDto).collect(Collectors.toList());
+        findAllCommentsForAdmin(events);
+        return events.stream().map(EventMapper::toEventFullDtoForAdmin).collect(Collectors.toList());
     }
 
     /**
@@ -284,7 +302,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto findByIdByUser(Long id, HttpServletRequest request) {
+    public EventFullDtoForUser findByIdByUser(Long id, HttpServletRequest request) {
         Event event = findEventOrGetThrow(id);
         if (!event.getState().equals(PUBLISHED)) {
             throw new BadRequestException("Event with id=" + id + " not published");
@@ -293,8 +311,7 @@ public class EventServiceImpl implements EventService {
         findConfirmedComments(List.of(event));
         findConfirmedRequest(List.of(event));
         statClient.saveHit(request);
-        return EventMapper.toEventFullDto(event);
-
+        return EventMapper.toEventFullDtoForUser(event);
     }
 
     private User findUserOrGetThrow(Long userId) {
@@ -328,6 +345,14 @@ public class EventServiceImpl implements EventService {
     private void findConfirmedComments(List<Event> events) {
         Map<Event, List<Comment>> comments =
                 commentRepository.getAllByEventInAndStatusEquals(events, CommentStatus.PUBLISHED)
+                        .stream()
+                        .collect(groupingBy(Comment::getEvent));
+        events.forEach(event -> event.setComments(comments.get(event)));
+    }
+
+    private void findAllCommentsForAdmin(List<Event> events) {
+        Map<Event, List<Comment>> comments =
+                commentRepository.getAllByEventIn(events)
                         .stream()
                         .collect(groupingBy(Comment::getEvent));
         events.forEach(event -> event.setComments(comments.get(event)));

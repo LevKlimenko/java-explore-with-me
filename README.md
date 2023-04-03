@@ -1,3 +1,4 @@
 # java-explore-with-me
+ПулРеквест
 
-Template repository for ExploreWithMe project.
+https://github.com/LevKlimenko/java-explore-with-me/pull/6

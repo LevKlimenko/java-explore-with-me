@@ -32,15 +32,15 @@ public class AdminCommentController {
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
-    @PatchMapping("/comments/{id}/approve")
-    public ResponseEntity<CommentFullDto> updateTextByAdmin(@PathVariable @Positive Long id) {
+    @PatchMapping("/comments/approve")
+    public ResponseEntity<CommentFullDto> approveByAdmin(@RequestParam @Positive Long id) {
         CommentFullDto comment = commentService.approveCommentByAdmin(id);
         log.info("Comment id={} was approved by the admin", id);
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
-    @DeleteMapping("/comments/{id}")
-    public ResponseEntity<Object> deleteCommentByAdmin(@PathVariable @Positive Long id) {
+    @DeleteMapping("/comments")
+    public ResponseEntity<Object> deleteCommentByAdmin(@RequestParam @Positive Long id) {
         commentService.deleteByIdByAdmin(id);
         log.info("Comment id={} was deleted by the admin", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -76,11 +76,4 @@ public class AdminCommentController {
         log.info("Comments on moderation have been received");
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
-
-    //deleteByAdmin
-    //updateTextByAdmin-
-    //approveCommentByAdmin
-    //getAllCommentForEventIdOnModeration
-    //getAllCommentsForEventId
-    //getAllCommentOnModeration
 }

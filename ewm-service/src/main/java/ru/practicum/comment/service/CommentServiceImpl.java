@@ -95,10 +95,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentShortDto> findByOwnerId(Long userId, String typeSort, String directionSort, int from, int size) {
+    public List<CommentFullDto> findByOwnerId(Long userId, String typeSort, String directionSort, int from, int size) {
         findUserOrGetThrow(userId);
         Pageable pageable = getSortFromParam(typeSort, directionSort, from, size);
-        return CommentMapper.toCommentShortDtoList(commentRepository.getAllByUserId(userId, pageable));
+        return CommentMapper.toCommentFullDtoList(commentRepository.getAllByUserId(userId, pageable));
     }
 
     /**
@@ -188,7 +188,6 @@ public class CommentServiceImpl implements CommentService {
         }
         return CommentMapper.toCommentFullDto(comment);
     }
-
 
     private User findUserOrGetThrow(Long userId) {
         return userRepository.findById(userId).orElseThrow(
