@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "800b0412-0e71-4bf4-a6ea-70d7a2528a22",
 		"name": "Diplom",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22353798"
 	},
 	"item": [
 		{
@@ -15,15 +16,18 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"pm.globals.set(\"idUser1\", pm.response.json().id);\r",
+									"\r",
 									"pm.test(\"Status code is 201\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
 									"});\r",
+									"\r",
 									"pm.test(\"Test create user\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idUser1\"));\r",
 									"    pm.expect(jsonData.email).to.eql('ivan.petrov@practicummail.ru');\r",
 									"    pm.expect(jsonData.name).to.eql('Иван Петров');\r",
-									"});"
+									"    });"
 								],
 								"type": "text/javascript"
 							}
@@ -69,12 +73,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"pm.globals.set(\"idCategory1\", pm.response.json().id);\r",
+									"\r",
 									"pm.test(\"Status code is 201\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
 									"});\r",
+									"\r",
 									"pm.test(\"Test create category\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(jsonData.name).to.eql('Спорт');\r",
 									"});"
 								],
@@ -122,18 +129,23 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"pm.globals.set(\"idEvent1\", pm.response.json().id);\r",
+									"\r",
 									"pm.test(\"Status code is 201\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
 									"});\r",
+									"\r",
 									"pm.test(\"Test create event with commentingClosed=true and commentModeration=true \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(jsonData.category.id).to.eql(1);\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(jsonData.state).to.eql('PENDING')\r",
 									"    pm.expect(jsonData.commentModeration).to.true;\r",
 									"    pm.expect(jsonData.commentingClosed).to.true;\r",
-									"});"
+									"});\r",
+									"\r",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -155,10 +167,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"annotation\": \"Сплав на байдарках похож на полет.\",\r\n  \"category\": 1,\r\n  \"description\": \"Сплав на байдарках похож на полет. На спокойной воде — это парение. На бурной, порожистой — выполнение фигур высшего пилотажа. И то, и другое дарят чувство обновления, феерические эмоции, яркие впечатления.\",\r\n  \"eventDate\": \"2024-12-31 15:10:05\",\r\n  \"location\": {\r\n    \"lat\": 55.754167,\r\n    \"lon\": 37.62\r\n  },\r\n  \"paid\": true,\r\n  \"participantLimit\": 10,\r\n  \"requestModeration\": false,\r\n  \"title\": \"Сплав на байдарках\",\r\n  \"commentModeration\": true,\r\n  \"commentingClosed\": true\r\n}"
+							"raw": "{\r\n  \"annotation\": \"Сплав на байдарках похож на полет.\",\r\n  \"category\": {{idCategory1}},\r\n  \"description\": \"Сплав на байдарках похож на полет. На спокойной воде — это парение. На бурной, порожистой — выполнение фигур высшего пилотажа. И то, и другое дарят чувство обновления, феерические эмоции, яркие впечатления.\",\r\n  \"eventDate\": \"2024-12-31 15:10:05\",\r\n  \"location\": {\r\n    \"lat\": 55.754167,\r\n    \"lon\": 37.62\r\n  },\r\n  \"paid\": true,\r\n  \"participantLimit\": 10,\r\n  \"requestModeration\": false,\r\n  \"title\": \"Сплав на байдарках\",\r\n  \"commentModeration\": true,\r\n  \"commentingClosed\": true\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/users/1/events",
+							"raw": "http://localhost:8080/users/:id/events",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -166,8 +178,14 @@
 							"port": "8080",
 							"path": [
 								"users",
-								"1",
+								":id",
 								"events"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idUser1}}"
+								}
 							]
 						}
 					},
@@ -208,7 +226,7 @@
 							"raw": "{\r\n    \"text\": \"text_when_event_not_published\"\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/events/1/user/1/comments",
+							"raw": "http://localhost:8080/events/:eventId/user/:userId/comments",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -216,10 +234,20 @@
 							"port": "8080",
 							"path": [
 								"events",
-								"1",
+								":eventId",
 								"user",
-								"1",
+								":userId",
 								"comments"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
 							]
 						}
 					},
@@ -237,9 +265,9 @@
 									"});\r",
 									"pm.test(\"Test update event with state=PUBLISHED \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(jsonData.category.id).to.eql(1);\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(jsonData.commentModeration).to.true;\r",
 									"    pm.expect(jsonData.commentingClosed).to.true;\r",
@@ -268,7 +296,7 @@
 							"raw": "{\r\n  \"stateAction\": \"PUBLISH_EVENT\"\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/events/1",
+							"raw": "http://localhost:8080/admin/events/:eventId",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -277,7 +305,13 @@
 							"path": [
 								"admin",
 								"events",
-								"1"
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
 							]
 						}
 					},
@@ -318,7 +352,7 @@
 							"raw": "{\r\n    \"text\": \"test_with_closed_commenting\"\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/events/1/user/1/comments",
+							"raw": "http://localhost:8080/events/:eventId/user/:userId/comments",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -326,10 +360,20 @@
 							"port": "8080",
 							"path": [
 								"events",
-								"1",
+								":eventId",
 								"user",
-								"1",
+								":userId",
 								"comments"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
 							]
 						}
 					},
@@ -347,9 +391,9 @@
 									"});\r",
 									"pm.test(\"Test update event with commentingClosed=false and commentModeration=false \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(jsonData.category.id).to.eql(1);\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(jsonData.commentModeration).to.false;\r",
 									"    pm.expect(jsonData.commentingClosed).to.false;\r",
@@ -378,7 +422,7 @@
 							"raw": "{\r\n  \"commentModeration\": false,\r\n  \"commentingClosed\": false\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/events/1/moderation",
+							"raw": "http://localhost:8080/admin/events/:eventId/moderation",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -387,8 +431,14 @@
 							"path": [
 								"admin",
 								"events",
-								"1",
+								":eventId",
 								"moderation"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
 							]
 						}
 					},
@@ -401,12 +451,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"pm.globals.set(\"idCom1\", pm.response.json().id);\r",
+									"\r",
 									"pm.test(\"Status code is 201\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
 									"});\r",
 									"pm.test(\"Test create comment\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData.text).to.eql('text');\r",
 									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
@@ -435,7 +487,7 @@
 							"raw": "{\r\n    \"text\": \"text\"\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/events/1/user/1/comments",
+							"raw": "http://localhost:8080/events/:eventId/user/:userId/comments",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -443,10 +495,20 @@
 							"port": "8080",
 							"path": [
 								"events",
-								"1",
+								":eventId",
 								"user",
-								"1",
+								":userId",
 								"comments"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
 							]
 						}
 					},
@@ -487,7 +549,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/comments/approve?id=1",
+							"raw": "http://localhost:8080/admin/comments/approve?id={{idCom1}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -501,7 +563,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -520,7 +582,7 @@
 									"});\r",
 									"pm.test(\"Test update comment by owner\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData.text).to.eql('text_update');\r",
 									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
@@ -564,11 +626,11 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "{{idUser1}}"
 								},
 								{
 									"key": "commentId",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -587,7 +649,7 @@
 									"});\r",
 									"pm.test(\"Test get comments by owner\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData[0].id).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
 									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData[0].status).to.eql('PUBLISHED');\r",
@@ -633,7 +695,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "{{idUser1}}"
 								}
 							]
 						}
@@ -652,13 +714,19 @@
 									"});\r",
 									"pm.test(\"Test update event with commentingClosed=false and commentModeration=true \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(jsonData.category.id).to.eql(1);\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(jsonData.commentModeration).to.true;\r",
 									"    pm.expect(jsonData.commentingClosed).to.false;\r",
 									"    pm.expect(jsonData.comments.length).to.eql(1);\r",
+									"    var comment1 = jsonData.comments[0];\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(comment1.text).to.eql(\"text_update\");\r",
+									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment1.status).to.eql(\"PUBLISHED\");\r",
+									"    pm.expect(comment1.createdOn).not.null;\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -684,7 +752,7 @@
 							"raw": "{\r\n  \"commentModeration\": true\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/events/1/moderation",
+							"raw": "http://localhost:8080/admin/events/:eventId/moderation",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -693,8 +761,14 @@
 							"path": [
 								"admin",
 								"events",
-								"1",
+								":eventId",
 								"moderation"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
 							]
 						}
 					},
@@ -707,12 +781,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"pm.globals.set(\"idCom2\", pm.response.json().id);\r",
+									"\r",
 									"pm.test(\"Status code is 201\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
 									"});\r",
 									"pm.test(\"Test create comment 2 with moderation\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(2);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom2\"));\r",
 									"    pm.expect(jsonData.text).to.eql('text_2_On_Moderation');\r",
 									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData.status).to.eql('ON_MODERATION');\r",
@@ -741,7 +817,7 @@
 							"raw": "{\r\n    \"text\": \"text_2_On_Moderation\"\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/events/1/user/1/comments",
+							"raw": "http://localhost:8080/events/:eventId/user/:userId/comments",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -749,10 +825,20 @@
 							"port": "8080",
 							"path": [
 								"events",
-								"1",
+								":eventId",
 								"user",
-								"1",
+								":userId",
 								"comments"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
 							]
 						}
 					},
@@ -771,11 +857,11 @@
 									"pm.test(\"Test get all comment by owner\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.length).to.eql(2);\r",
-									"    pm.expect(jsonData[0].id).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
 									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData[0].status).to.eql('PUBLISHED')\r",
-									"    pm.expect(jsonData[1].id).to.eql(2);\r",
+									"    pm.expect(jsonData[1].id).to.eql(pm.globals.get(\"idCom2\"));\r",
 									"    pm.expect(jsonData[1].text).to.eql('text_2_On_Moderation');\r",
 									"    pm.expect(jsonData[1].authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData[1].status).to.eql('ON_MODERATION')\r",
@@ -821,7 +907,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "{{idUser1}}"
 								}
 							]
 						}
@@ -841,7 +927,7 @@
 									"pm.test(\"Test get all comments by public\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.length).to.eql(1);\r",
-									"    pm.expect(jsonData[0].id).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
 									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
 									"});"
@@ -886,7 +972,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "{{idUser1}}"
 								}
 							]
 						}
@@ -906,7 +992,7 @@
 									"pm.test(\"Test get all comments by public\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.length).to.eql(1);\r",
-									"    pm.expect(jsonData[0].id).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
 									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
 									"});"
@@ -951,7 +1037,7 @@
 							"variable": [
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "{{idEvent1}}"
 								}
 							]
 						}
@@ -970,7 +1056,7 @@
 									"});\r",
 									"pm.test(\"Test get comments by owner\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData.text).to.eql('text_update');\r",
 									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
@@ -1002,7 +1088,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/comments?id=1",
+							"raw": "http://localhost:8080/comments?id={{idCom1}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1014,7 +1100,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -1214,15 +1300,15 @@
 									"});\r",
 									"pm.test(\"Test get comments for event with 1 comment on moderation \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(jsonData.category.id).to.eql(1);\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(jsonData.commentModeration).to.true;\r",
 									"    pm.expect(jsonData.commentingClosed).to.false;\r",
 									"    pm.expect(jsonData.comments.length).to.eql(1);\r",
 									"    var comment = jsonData.comments[0];\r",
-									"    pm.expect(comment.id).to.eql(1);\r",
+									"    pm.expect(comment.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(comment.text).to.eql(\"text_update\");\r",
 									"    pm.expect(comment.authorName).to.eql(\"Иван Петров\");\r",
 									"    pm.expect(comment.createdOn).not.null;\r",
@@ -1254,7 +1340,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/events/1",
+							"raw": "http://localhost:8080/events/:id",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1262,7 +1348,13 @@
 							"port": "8080",
 							"path": [
 								"events",
-								"1"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
 							]
 						}
 					},
@@ -1442,21 +1534,21 @@
 									"pm.test(\"Test get event with 1 comment on moderation by Admin \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    var eventData = jsonData[0];\r",
-									"    pm.expect(eventData.id).to.eql(1);\r",
+									"    pm.expect(eventData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(eventData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(eventData.category.id).to.eql(1);\r",
+									"    pm.expect(eventData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(eventData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(eventData.commentModeration).to.true;\r",
 									"    pm.expect(eventData.commentingClosed).to.false;\r",
 									"    pm.expect(eventData.comments.length).to.eql(2);\r",
 									"    var comment1 = eventData.comments[0];\r",
-									"    pm.expect(comment1.id).to.eql(1);\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(comment1.text).to.eql(\"text_update\");\r",
 									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
 									"    pm.expect(comment1.status).to.eql(\"PUBLISHED\");\r",
 									"    pm.expect(comment1.createdOn).not.null;\r",
 									"    var comment2 = eventData.comments[1];\r",
-									"    pm.expect(comment2.id).to.eql(2);\r",
+									"    pm.expect(comment2.id).to.eql(pm.globals.get(\"idCom2\"));\r",
 									"    pm.expect(comment2.text).to.eql(\"text_2_On_Moderation\");\r",
 									"    pm.expect(comment2.authorName).to.eql(\"Иван Петров\");\r",
 									"    pm.expect(comment2.status).to.eql(\"ON_MODERATION\");\r",
@@ -1489,7 +1581,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/events?users=1",
+							"raw": "http://localhost:8080/admin/events?users={{idUser1}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1502,7 +1594,7 @@
 							"query": [
 								{
 									"key": "users",
-									"value": "1"
+									"value": "{{idUser1}}"
 								}
 							]
 						}
@@ -1521,7 +1613,7 @@
 									"});\r",
 									"pm.test(\"Test update approve comment by Admin\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(2);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom2\"));\r",
 									"    pm.expect(jsonData.text).to.eql('text_2_On_Moderation');\r",
 									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
@@ -1551,7 +1643,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/comments/approve?id=2",
+							"raw": "http://localhost:8080/admin/comments/approve?id={{idCom2}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1565,7 +1657,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "2"
+									"value": "{{idCom2}}"
 								}
 							]
 						}
@@ -1592,12 +1684,12 @@
 									"    pm.expect(jsonData.commentingClosed).to.false;\r",
 									"    pm.expect(jsonData.comments.length).to.eql(2);\r",
 									"    var comment = jsonData.comments[0];\r",
-									"    pm.expect(comment.id).to.eql(1);\r",
+									"    pm.expect(comment.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(comment.text).to.eql(\"text_update\");\r",
 									"    pm.expect(comment.authorName).to.eql(\"Иван Петров\");\r",
 									"    pm.expect(comment.createdOn).not.null;\r",
 									"    var comment2 = jsonData.comments[1];\r",
-									"    pm.expect(comment2.id).to.eql(2);\r",
+									"    pm.expect(comment2.id).to.eql(pm.globals.get(\"idCom2\"));\r",
 									"    pm.expect(comment2.text).to.eql(\"text_2_On_Moderation\");\r",
 									"    pm.expect(comment2.authorName).to.eql(\"Иван Петров\");\r",
 									"    pm.expect(comment2.createdOn).not.null;\r",
@@ -1629,7 +1721,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/events/1?",
+							"raw": "http://localhost:8080/events/:id",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1637,12 +1729,12 @@
 							"port": "8080",
 							"path": [
 								"events",
-								"1"
+								":id"
 							],
-							"query": [
+							"variable": [
 								{
-									"key": "",
-									"value": null
+									"key": "id",
+									"value": "{{idEvent1}}"
 								}
 							]
 						}
@@ -1662,10 +1754,10 @@
 									"pm.test(\"Test get all comments by public\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.length).to.eql(2);\r",
-									"    pm.expect(jsonData[0].id).to.eql(2);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom2\"));\r",
 									"    pm.expect(jsonData[0].text).to.eql('text_2_On_Moderation');\r",
 									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
-									"    pm.expect(jsonData[1].id).to.eql(1);\r",
+									"    pm.expect(jsonData[1].id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData[1].text).to.eql('text_update');\r",
 									"    pm.expect(jsonData[1].authorName).to.eql('Иван Петров');\r",
 									"   \r",
@@ -1721,7 +1813,7 @@
 							"variable": [
 								{
 									"key": "eventId",
-									"value": "1"
+									"value": "{{idEvent1}}"
 								}
 							]
 						}
@@ -1877,15 +1969,15 @@
 									"pm.test(\"Test get event after delete comment by Admin \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    var eventData = jsonData[0];\r",
-									"    pm.expect(eventData.id).to.eql(1);\r",
+									"    pm.expect(eventData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(eventData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(eventData.category.id).to.eql(1);\r",
+									"    pm.expect(eventData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(eventData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(eventData.commentModeration).to.true;\r",
 									"    pm.expect(eventData.commentingClosed).to.false;\r",
 									"    pm.expect(eventData.comments.length).to.eql(1);\r",
 									"    var comment1 = eventData.comments[0];\r",
-									"    pm.expect(comment1.id).to.eql(1);\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(comment1.text).to.eql(\"text_update\");\r",
 									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
 									"    pm.expect(comment1.status).to.eql(\"PUBLISHED\");\r",
@@ -1918,7 +2010,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/events?users=1",
+							"raw": "http://localhost:8080/admin/events?users={{idUser1}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1931,7 +2023,7 @@
 							"query": [
 								{
 									"key": "users",
-									"value": "1"
+									"value": "{{idUser1}}"
 								}
 							]
 						}
@@ -1950,7 +2042,7 @@
 									"});\r",
 									"pm.test(\"Test update comment after Event.Moderation=true by owner\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData.text).to.eql('text_update_after_Moderation_on');\r",
 									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData.status).to.eql('ON_MODERATION');\r",
@@ -1994,11 +2086,11 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "{{idUser1}}"
 								},
 								{
 									"key": "commentId",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -2017,9 +2109,9 @@
 									"});\r",
 									"pm.test(\"Test get comments for event with 1 comment on moderation by public \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(jsonData.category.id).to.eql(1);\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(jsonData.commentModeration).to.true;\r",
 									"    pm.expect(jsonData.commentingClosed).to.false;\r",
@@ -2052,7 +2144,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/events/1",
+							"raw": "http://localhost:8080/events/:eventId",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2060,7 +2152,13 @@
 							"port": "8080",
 							"path": [
 								"events",
-								"1"
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
 							]
 						}
 					},
@@ -2079,15 +2177,15 @@
 									"pm.test(\"Test get event after event.commentModeration=true by Admin \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    var eventData = jsonData[0];\r",
-									"    pm.expect(eventData.id).to.eql(1);\r",
+									"    pm.expect(eventData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(eventData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(eventData.category.id).to.eql(1);\r",
+									"    pm.expect(eventData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(eventData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(eventData.commentModeration).to.true;\r",
 									"    pm.expect(eventData.commentingClosed).to.false;\r",
 									"    pm.expect(eventData.comments.length).to.eql(1);\r",
 									"    var comment1 = eventData.comments[0];\r",
-									"    pm.expect(comment1.id).to.eql(1);\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(comment1.text).to.eql(\"text_update_after_Moderation_on\");\r",
 									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
 									"    pm.expect(comment1.status).to.eql(\"ON_MODERATION\");\r",
@@ -2120,7 +2218,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/events?users=1",
+							"raw": "http://localhost:8080/admin/events?users={{idUser1}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2133,7 +2231,7 @@
 							"query": [
 								{
 									"key": "users",
-									"value": "1"
+									"value": "{{idUser1}}"
 								}
 							]
 						}
@@ -2153,7 +2251,7 @@
 									"pm.test(\"Test get all comments to event by Admin\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.length).to.eql(1);\r",
-									"    pm.expect(jsonData[0].id).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData[0].text).to.eql('text_update_after_Moderation_on');\r",
 									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData[0].status).to.eql('ON_MODERATION')\r",
@@ -2185,7 +2283,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/comments/events/1/moderation",
+							"raw": "http://localhost:8080/admin/comments/events/:eventId/moderation",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2195,8 +2293,14 @@
 								"admin",
 								"comments",
 								"events",
-								"1",
+								":eventId",
 								"moderation"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
 							]
 						}
 					},
@@ -2214,7 +2318,7 @@
 									"});\r",
 									"pm.test(\"Test update comment after Event.Moderation=true by Admin\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData.text).to.eql('text_updated_by_Admin');\r",
 									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData.status).to.eql('ON_MODERATION');\r",
@@ -2244,7 +2348,7 @@
 							"raw": "{\r\n    \"text\": \"text_updated_by_Admin\"\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/comments?id=1",
+							"raw": "http://localhost:8080/admin/comments?id={{idCom1}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2257,7 +2361,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -2276,7 +2380,7 @@
 									"});\r",
 									"pm.test(\"Test update approve comment by Admin\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(jsonData.text).to.eql('text_updated_by_Admin');\r",
 									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
 									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
@@ -2306,7 +2410,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/comments/approve?id=1",
+							"raw": "http://localhost:8080/admin/comments/approve?id={{idCom1}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2320,7 +2424,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -2339,15 +2443,15 @@
 									"});\r",
 									"pm.test(\"Test get comments for event with 1 comment after Admin moderation \", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(jsonData.category.id).to.eql(1);\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(jsonData.commentModeration).to.true;\r",
 									"    pm.expect(jsonData.commentingClosed).to.false;\r",
 									"    pm.expect(jsonData.comments.length).to.eql(1);\r",
 									"    var comment = jsonData.comments[0];\r",
-									"    pm.expect(comment.id).to.eql(1);\r",
+									"    pm.expect(comment.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(comment.text).to.eql(\"text_updated_by_Admin\");\r",
 									"    pm.expect(comment.authorName).to.eql(\"Иван Петров\");\r",
 									"    pm.expect(comment.createdOn).not.null;\r",
@@ -2379,7 +2483,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/events/1",
+							"raw": "http://localhost:8080/events/:id",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2387,7 +2491,13 @@
 							"port": "8080",
 							"path": [
 								"events",
-								"1"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
 							]
 						}
 					},
@@ -2405,14 +2515,14 @@
 									"});\r",
 									"pm.test(\"Test update event with commentingClosed=true\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(1);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
 									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
-									"    pm.expect(jsonData.category.id).to.eql(1);\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
 									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
 									"    pm.expect(jsonData.commentModeration).to.false;\r",
 									"    pm.expect(jsonData.commentingClosed).to.true;\r",
 									"    var comment1 = jsonData.comments[0];\r",
-									"    pm.expect(comment1.id).to.eql(1);\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
 									"    pm.expect(comment1.text).to.eql(\"text_updated_by_Admin\");\r",
 									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
 									"    pm.expect(comment1.status).to.eql(\"PUBLISHED\");\r",
@@ -2442,7 +2552,7 @@
 							"raw": "{\r\n  \"commentModeration\": false,\r\n  \"commentingClosed\": true\r\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/events/1/moderation",
+							"raw": "http://localhost:8080/admin/events/:id/moderation",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2451,8 +2561,14 @@
 							"path": [
 								"admin",
 								"events",
-								"1",
+								":id",
 								"moderation"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
 							]
 						}
 					},
@@ -2508,11 +2624,11 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "{{idUser1}}"
 								},
 								{
 									"key": "commentId",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -2526,12 +2642,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"pm.globals.set(\"idUser2\", pm.response.json().id);\r",
+									"\r",
 									"pm.test(\"Status code is 201\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
 									"});\r",
 									"pm.test(\"Test create user 2\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.id).to.eql(2);\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idUser2\"));\r",
 									"    pm.expect(jsonData.email).to.eql('petr.ivanov@practicummail.ru');\r",
 									"    pm.expect(jsonData.name).to.eql('Петр Иванов');\r",
 									"});"
@@ -2623,11 +2741,11 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "2"
+									"value": "{{idUser2}}"
 								},
 								{
 									"key": "commentId",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -2684,11 +2802,11 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "2"
+									"value": "{{idUser2}}"
 								},
 								{
 									"key": "commentId",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -2726,10 +2844,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"text\": \"text_updated_by_Admin\"\r\n}"
+							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/comments?id=1",
+							"raw": "http://localhost:8080/admin/comments?id={{idCom1}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2742,7 +2860,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "{{idCom1}}"
 								}
 							]
 						}
@@ -2787,10 +2905,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"text\": \"test_update\"\r\n}"
+							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/comments/events/1",
+							"raw": "http://localhost:8080/admin/comments/events/:id",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2800,7 +2918,13 @@
 								"admin",
 								"comments",
 								"events",
-								"1"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
 							]
 						}
 					},
