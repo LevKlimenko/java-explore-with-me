@@ -1279,7 +1279,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "http://localhost:8080/admin/comments/moderation",
+							"raw": "http://localhost:8080/admin/comments?status=ON_MODERATION",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1287,8 +1287,13 @@
 							"port": "8080",
 							"path": [
 								"admin",
-								"comments",
-								"moderation"
+								"comments"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "ON_MODERATION"
+								}
 							]
 						}
 					},
@@ -2820,7 +2825,70 @@
 					"response": []
 				},
 				{
-					"name": "Удаление поста админом",
+					"name": "Установка статуса \"CANCELED\" комментарию",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update comment after Event.Moderation=true by Admin\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text_updated_by_Admin');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('CANCELED');\r",
+									"    pm.expect(jsonData.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments/cancel?id={{idCom1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments",
+								"cancel"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление комментария админом",
 					"event": [
 						{
 							"listen": "test",

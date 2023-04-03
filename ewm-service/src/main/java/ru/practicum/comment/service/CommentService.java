@@ -3,6 +3,7 @@ package ru.practicum.comment.service;
 import ru.practicum.comment.dto.CommentFullDto;
 import ru.practicum.comment.dto.CommentIncomingDto;
 import ru.practicum.comment.dto.CommentShortDto;
+import ru.practicum.comment.model.CommentStatus;
 
 import java.util.List;
 
@@ -21,12 +22,14 @@ public interface CommentService {
 
     CommentFullDto approveCommentByAdmin(Long commentId);
 
+    CommentFullDto cancelCommentByAdmin(Long commentId);
+
     List<CommentFullDto> getAllCommentsForEventIdOnModeration(Long eventId, String directSort, int from, int size);
 
     List<CommentFullDto> getAllCommentsForEventId(Long eventId, String typeSort, String directionSort,
                                                   int from, int size);
 
-    List<CommentFullDto> getAllCommentsOnModeration(String directSort, int from, int size);
+    List<CommentFullDto> getAllCommentsWithStatus(CommentStatus status, String directSort, int from, int size);
 
     List<CommentShortDto> findByOwnerIdFromUser(Long userId, String typeSort,
                                                 String directionSort, int from, int size);

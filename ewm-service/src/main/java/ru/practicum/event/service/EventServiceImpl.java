@@ -11,6 +11,7 @@ import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.client.stat.StatClient;
 import ru.practicum.comment.model.Comment;
+import ru.practicum.comment.model.CommentStatus;
 import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.event.dto.*;
@@ -44,7 +45,6 @@ import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.PUBLISH_EVE
 import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.REJECT_EVENT;
 import static ru.practicum.event.dto.UpdateUserEventDto.StateAction.CANCEL_REVIEW;
 import static ru.practicum.event.dto.UpdateUserEventDto.StateAction.SEND_TO_REVIEW;
-import static ru.practicum.event.model.State.CANCELED;
 import static ru.practicum.event.model.State.PENDING;
 import static ru.practicum.request.model.Status.CONFIRMED;
 import static ru.practicum.request.model.Status.REJECTED;
@@ -104,7 +104,7 @@ public class EventServiceImpl implements EventService {
             if (updateEventDto.getStateAction() == SEND_TO_REVIEW) {
                 event.setState(PENDING);
             } else if (updateEventDto.getStateAction() == CANCEL_REVIEW) {
-                event.setState(CANCELED);
+                event.setState(State.CANCELED);
             } else {
                 throw new BadRequestException("StateAction is not supported for this argument");
             }
@@ -138,7 +138,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
-                    () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
                     .getStatus().equals(CONFIRMED)) {
                 throw new ConflictException("You can't change an already accepted request");
             }
@@ -186,7 +186,7 @@ public class EventServiceImpl implements EventService {
         if (event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException("Event with id=" + eventId + " has already been published.You can't change it");
         }
-        if (event.getState().equals(CANCELED)) {
+        if (event.getState().equals(State.CANCELED)) {
             throw new ConflictException("Event with id=" + eventId + " has already been canceled");
         }
         if (event.getEventDate().isBefore(LocalDateTime.now().minusHours(1))) {
@@ -198,7 +198,7 @@ public class EventServiceImpl implements EventService {
                 event.setState(State.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (updateEventDto.getStateAction() == REJECT_EVENT) {
-                event.setState(CANCELED);
+                event.setState(State.CANCELED);
                 event.setPublishedOn(null);
             }
         }
@@ -348,15 +348,15 @@ public class EventServiceImpl implements EventService {
                 commentRepository.getAllByEventInAndStatusEquals(events, PUBLISHED)
                         .stream()
                         .collect(groupingBy(Comment::getEvent));
-        events.forEach(event -> event.setComments(comments.get(event)));
+        events.forEach(event -> event.setComments(comments.getOrDefault(event, List.of())));
     }
 
     private void findAllCommentsForAdmin(List<Event> events) {
         Map<Event, List<Comment>> comments =
-                commentRepository.getAllByEventIn(events)
+                commentRepository.getAllByEventInAndStatusNot(events, CommentStatus.CANCELED)
                         .stream()
                         .collect(groupingBy(Comment::getEvent));
-        events.forEach(event -> event.setComments(comments.get(event)));
+        events.forEach(event -> event.setComments(comments.getOrDefault(event, List.of())));
     }
 
     private void findViews(List<Event> events) {

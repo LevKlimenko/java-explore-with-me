@@ -52,6 +52,7 @@ public class CommentServiceImpl implements CommentService {
         }
         Comment comment = new Comment();
         comment.setCreatedOn(LocalDateTime.now());
+        comment.setLastUpdate(LocalDateTime.now());
         comment.setUser(user);
         comment.setEvent(event);
         comment.setText(incomingDto.getText());
@@ -75,12 +76,14 @@ public class CommentServiceImpl implements CommentService {
         if (event.getCommentingClosed()) {
             throw new ConflictException("You can't change a comment in an event that is closed for comment");
         }
+        if (LocalDateTime.now().isAfter(comment.getCreatedOn().plusMinutes(1440))) {
+            throw new ConflictException("You can't change a comment after 24h after creation");
+        }
         if (event.getCommentModeration()) {
             comment.setStatus(CommentStatus.ON_MODERATION);
         }
-        if (incomingDto.getText() != null && !incomingDto.getText().isBlank()) {
-            comment.setText(incomingDto.getText());
-        }
+        comment.setText(incomingDto.getText());
+        comment.setLastUpdate(LocalDateTime.now());
         return CommentMapper.toCommentFullDto(comment);
     }
 
@@ -116,9 +119,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentFullDto updateTextByAdmin(Long commentId, CommentIncomingDto incomingDto) {
         Comment comment = findCommentOrGetThrow(commentId);
-        if (incomingDto.getText() != null && !incomingDto.getText().isBlank()) {
-            comment.setText(incomingDto.getText());
-        }
+        comment.setText(incomingDto.getText());
+        comment.setLastUpdate(LocalDateTime.now());
         return CommentMapper.toCommentFullDto(comment);
     }
 
@@ -130,6 +132,16 @@ public class CommentServiceImpl implements CommentService {
             throw new ConflictException("The comment has already been published");
         }
         comment.setStatus(CommentStatus.PUBLISHED);
+        comment.setLastUpdate(LocalDateTime.now());
+        return CommentMapper.toCommentFullDto(comment);
+    }
+
+    @Transactional
+    @Override
+    public CommentFullDto cancelCommentByAdmin(Long commentId) {
+        Comment comment = findCommentOrGetThrow(commentId);
+        comment.setStatus(CommentStatus.CANCELED);
+        comment.setLastUpdate(LocalDateTime.now());
         return CommentMapper.toCommentFullDto(comment);
     }
 
@@ -151,11 +163,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentFullDto> getAllCommentsOnModeration(String directSort, int from, int size) {
+    public List<CommentFullDto> getAllCommentsWithStatus(CommentStatus status, String directSort, int from, int size) {
         String sortedBy = "date";
         Pageable pageable = getSortFromParam(sortedBy, directSort, from, size);
         return CommentMapper.toCommentFullDtoList(
-                commentRepository.getAllByStatusEquals(CommentStatus.ON_MODERATION, pageable));
+                commentRepository.getAllByStatusEquals(status, pageable));
     }
 
     /**
@@ -211,6 +223,12 @@ public class CommentServiceImpl implements CommentService {
                 sort = Sort.by(Sort.Direction.DESC, "createdOn");
             } else {
                 sort = Sort.by(Sort.Direction.ASC, "createdOn");
+            }
+        } else if (typeSort.equalsIgnoreCase("lastUpdate")) {
+            if (directionSort.equalsIgnoreCase("desc")) {
+                sort = Sort.by(Sort.Direction.DESC, "lastUpdate");
+            } else {
+                sort = Sort.by(Sort.Direction.ASC, "lastUpdate");
             }
         } else {
             if (directionSort.equalsIgnoreCase("desc")) {

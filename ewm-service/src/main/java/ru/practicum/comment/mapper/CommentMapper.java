@@ -15,6 +15,7 @@ public class CommentMapper {
         return CommentFullDto.builder()
                 .id(comment.getId())
                 .createdOn(comment.getCreatedOn())
+                .lastUpdate(comment.getLastUpdate())
                 .authorName(comment.getUser().getName())
                 .text(comment.getText())
                 .status(comment.getStatus())
@@ -25,6 +26,7 @@ public class CommentMapper {
         return CommentShortDto.builder()
                 .id(comment.getId())
                 .createdOn(comment.getCreatedOn())
+                .lastUpdate(comment.getLastUpdate())
                 .authorName(comment.getUser().getName())
                 .text(comment.getText())
                 .build();

@@ -35,17 +35,17 @@ public class PublicEventController {
                                                                   @RequestParam(required = false) Boolean paid,
                                                                   @RequestParam(required = false)
                                                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                                              LocalDateTime rangeStart,
+                                                                  LocalDateTime rangeStart,
                                                                   @RequestParam(required = false)
                                                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                                              LocalDateTime rangeEnd,
+                                                                  LocalDateTime rangeEnd,
                                                                   @RequestParam(defaultValue = "false")
-                                                                              Boolean onlyAvailable,
+                                                                  Boolean onlyAvailable,
                                                                   @RequestParam(required = false) String sort,
                                                                   @RequestParam(defaultValue = "0") @PositiveOrZero
-                                                                              int from,
+                                                                  int from,
                                                                   @RequestParam(defaultValue = "10") @Positive
-                                                                              int size,
+                                                                  int size,
                                                                   HttpServletRequest request) {
         List<EventShortDto> events = service.findAllByUserWithParameters(text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size, request);

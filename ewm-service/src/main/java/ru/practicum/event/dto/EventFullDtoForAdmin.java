@@ -1,6 +1,7 @@
 package ru.practicum.event.dto;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.comment.dto.CommentFullDto;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventFullDtoForAdmin extends EventFullDto {
     List<CommentFullDto> comments;
 }

@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.comment.dto.CommentFullDto;
 import ru.practicum.comment.dto.CommentIncomingDto;
+import ru.practicum.comment.model.CommentStatus;
 import ru.practicum.comment.service.CommentService;
 
 import javax.validation.Valid;
@@ -35,6 +36,13 @@ public class AdminCommentController {
     @PatchMapping("/comments/approve")
     public ResponseEntity<CommentFullDto> approveByAdmin(@RequestParam @Positive Long id) {
         CommentFullDto comment = commentService.approveCommentByAdmin(id);
+        log.info("Comment id={} was approved by the admin", id);
+        return new ResponseEntity<>(comment, HttpStatus.OK);
+    }
+
+    @PatchMapping("/comments/cancel")
+    public ResponseEntity<CommentFullDto> cancelByAdmin(@RequestParam @Positive Long id) {
+        CommentFullDto comment = commentService.cancelCommentByAdmin(id);
         log.info("Comment id={} was approved by the admin", id);
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
@@ -67,12 +75,13 @@ public class AdminCommentController {
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
-    @GetMapping("/comments/moderation")
-    public ResponseEntity<List<CommentFullDto>> getAllCommentsForEventOnModeration(
+    @GetMapping("/comments")
+    public ResponseEntity<List<CommentFullDto>> getAllCommentsWithStatus(
+            @RequestParam(defaultValue = "ON_MODERATION") CommentStatus status,
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(defaultValue = "0") @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Positive int size) {
-        List<CommentFullDto> comments = commentService.getAllCommentsOnModeration(direction, from, size);
+        List<CommentFullDto> comments = commentService.getAllCommentsWithStatus(status, direction, from, size);
         log.info("Comments on moderation have been received");
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }

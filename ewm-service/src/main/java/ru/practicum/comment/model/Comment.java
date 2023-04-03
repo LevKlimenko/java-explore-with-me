@@ -1,6 +1,7 @@
 package ru.practicum.comment.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.event.model.Event;
 import ru.practicum.user.model.User;
 
@@ -14,12 +15,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(name = "created", nullable = false)
     LocalDateTime createdOn;
+    @Column(name = "last_update", nullable = false)
+    LocalDateTime lastUpdate;
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     User user;
