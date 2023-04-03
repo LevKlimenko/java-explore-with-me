@@ -16,15 +16,19 @@ public class CommentMapper {
                 .id(comment.getId())
                 .createdOn(comment.getCreatedOn())
                 .authorName(comment.getUser().getName())
-                .text(comment.getText()).build();
+                .text(comment.getText())
+                .status(comment.getStatus())
+                .build();
 
     }
 
     public static CommentShortDto toCommentShortDto(Comment comment) {
         return CommentShortDto.builder()
+                .id(comment.getId())
                 .createdOn(comment.getCreatedOn())
                 .authorName(comment.getUser().getName())
-                .text(comment.getText()).build();
+                .text(comment.getText())
+                .build();
 
     }
 

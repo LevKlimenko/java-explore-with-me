@@ -2,7 +2,6 @@ package ru.practicum.comment.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.request.model.Status;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -16,5 +15,4 @@ public class CommentIncomingDto {
     @NotBlank
     @Size(min = 3, max = 500)
     String text;
-    Status status;
 }

@@ -13,6 +13,6 @@ CREATE TABLE IF NOT EXISTS hit
     app_id    BIGINT                                              NOT NULL,
     uri       VARCHAR(64)                                         NOT NULL,
     ip        VARCHAR(16)                                         NOT NULL,
-    timestamp TIMESTAMP WITHOUT TIME ZONE not null,
+    timestamp TIMESTAMP WITHOUT TIME ZONE                         not null,
     CONSTRAINT "app_hit_constraint" FOREIGN KEY (app_id) references app (id)
 );
