@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
+import static ru.practicum.comment.model.CommentStatus.PUBLISHED;
 import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.PUBLISH_EVENT;
 import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.REJECT_EVENT;
 import static ru.practicum.event.dto.UpdateUserEventDto.StateAction.CANCEL_REVIEW;
@@ -92,7 +93,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDtoForUser updateByOwner(Long userId, Long eventId, UpdateUserEventDto updateEventDto) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
-        if (event.getState() == PUBLISHED) {
+        if (event.getState() == State.PUBLISHED) {
             throw new ConflictException("Illegal state for update event. State=" + event.getState());
         }
         if (!event.getInitiator().getId().equals(userId)) {
@@ -182,7 +183,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDtoForAdmin updateByAdmin(Long eventId, UpdateAdminEventDto updateEventDto) {
         Event event = findEventOrGetThrow(eventId);
-        if (event.getState().equals(PUBLISHED)) {
+        if (event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException("Event with id=" + eventId + " has already been published.You can't change it");
         }
         if (event.getState().equals(CANCELED)) {
@@ -194,7 +195,7 @@ public class EventServiceImpl implements EventService {
         event = checkAndUpdateEvent(eventId, updateEventDto);
         if (event.getState() == PENDING) {
             if (updateEventDto.getStateAction() == PUBLISH_EVENT) {
-                event.setState(PUBLISHED);
+                event.setState(State.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (updateEventDto.getStateAction() == REJECT_EVENT) {
                 event.setState(CANCELED);
@@ -271,7 +272,7 @@ public class EventServiceImpl implements EventService {
         }
         Pageable pageable = PageRequest.of(from / size, size, sortBy);
         QEvent qEvent = QEvent.event;
-        BooleanExpression expression = qEvent.id.isNotNull().and(qEvent.state.eq(PUBLISHED));
+        BooleanExpression expression = qEvent.id.isNotNull().and(qEvent.state.eq(State.PUBLISHED));
         if (text != null && !text.isEmpty()) {
             expression = expression.and((qEvent.annotation.containsIgnoreCase(text))
                     .or(qEvent.description.containsIgnoreCase(text)));
@@ -294,7 +295,7 @@ public class EventServiceImpl implements EventService {
             events = events.stream().filter(event ->
                     event.getParticipantLimit() > event.getConfirmedRequests()).collect(Collectors.toList());
         }
-       // findConfirmedComments(events);
+        findConfirmedComments(events);
         findViews(events);
         statClient.saveHit(request);
         return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
@@ -304,11 +305,11 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDtoForUser findByIdByUser(Long id, HttpServletRequest request) {
         Event event = findEventOrGetThrow(id);
-        if (!event.getState().equals(PUBLISHED)) {
+        if (!event.getState().equals(State.PUBLISHED)) {
             throw new BadRequestException("Event with id=" + id + " not published");
         }
         findViews(List.of(event));
-        //findConfirmedComments(List.of(event));
+        findConfirmedComments(List.of(event));
         findConfirmedRequest(List.of(event));
         statClient.saveHit(request);
         return EventMapper.toEventFullDtoForUser(event);
@@ -344,7 +345,7 @@ public class EventServiceImpl implements EventService {
 
     private void findConfirmedComments(List<Event> events) {
         Map<Event, List<Comment>> comments =
-                commentRepository.getAllByEventInAndStatusEquals(events, CommentStatus.PUBLISHED)
+                commentRepository.getAllByEventInAndStatusEquals(events, PUBLISHED)
                         .stream()
                         .collect(groupingBy(Comment::getEvent));
         events.forEach(event -> event.setComments(comments.get(event)));

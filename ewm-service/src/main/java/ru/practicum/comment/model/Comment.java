@@ -29,5 +29,6 @@ public class Comment {
     @Column(nullable = false)
     String text;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     CommentStatus status;
 }

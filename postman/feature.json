@@ -48,10 +48,12 @@
 							"raw": "{\r\n  \"email\": \"ivan.petrov@practicummail.ru\",\r\n  \"name\": \"Иван Петров\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/users",
+							"raw": "http://localhost:8080/admin/users",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"users"
@@ -99,10 +101,12 @@
 							"raw": "{\r\n  \"name\": \"Спорт\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/categories",
+							"raw": "http://localhost:8080/admin/categories",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"categories"
@@ -154,10 +158,12 @@
 							"raw": "{\r\n  \"annotation\": \"Сплав на байдарках похож на полет.\",\r\n  \"category\": 1,\r\n  \"description\": \"Сплав на байдарках похож на полет. На спокойной воде — это парение. На бурной, порожистой — выполнение фигур высшего пилотажа. И то, и другое дарят чувство обновления, феерические эмоции, яркие впечатления.\",\r\n  \"eventDate\": \"2024-12-31 15:10:05\",\r\n  \"location\": {\r\n    \"lat\": 55.754167,\r\n    \"lon\": 37.62\r\n  },\r\n  \"paid\": true,\r\n  \"participantLimit\": 10,\r\n  \"requestModeration\": false,\r\n  \"title\": \"Сплав на байдарках\",\r\n  \"commentModeration\": true,\r\n  \"commentingClosed\": true\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/1/events",
+							"raw": "http://localhost:8080/users/1/events",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								"1",
@@ -202,10 +208,12 @@
 							"raw": "{\r\n    \"text\": \"text_when_event_not_published\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/events/1/user/1/comments",
+							"raw": "http://localhost:8080/events/1/user/1/comments",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"events",
 								"1",
@@ -260,10 +268,12 @@
 							"raw": "{\r\n  \"stateAction\": \"PUBLISH_EVENT\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/events/1",
+							"raw": "http://localhost:8080/admin/events/1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"events",
@@ -308,10 +318,12 @@
 							"raw": "{\r\n    \"text\": \"test_with_closed_commenting\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/events/1/user/1/comments",
+							"raw": "http://localhost:8080/events/1/user/1/comments",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"events",
 								"1",
@@ -366,10 +378,12 @@
 							"raw": "{\r\n  \"commentModeration\": false,\r\n  \"commentingClosed\": false\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/events/1/moderation",
+							"raw": "http://localhost:8080/admin/events/1/moderation",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"events",
@@ -421,10 +435,12 @@
 							"raw": "{\r\n    \"text\": \"text\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/events/1/user/1/comments",
+							"raw": "http://localhost:8080/events/1/user/1/comments",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"events",
 								"1",
@@ -471,10 +487,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/comments/approve?id=1",
+							"raw": "http://localhost:8080/admin/comments/approve?id=1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"comments",
@@ -531,10 +549,12 @@
 							"raw": "{\r\n    \"text\": \"text_update\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments/:commentId",
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -599,10 +619,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments",
+							"raw": "http://localhost:8080/users/:userId/comments",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -662,10 +684,12 @@
 							"raw": "{\r\n  \"commentModeration\": true\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/events/1/moderation",
+							"raw": "http://localhost:8080/admin/events/1/moderation",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"events",
@@ -717,10 +741,12 @@
 							"raw": "{\r\n    \"text\": \"text_2_On_Moderation\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/events/1/user/1/comments",
+							"raw": "http://localhost:8080/events/1/user/1/comments",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"events",
 								"1",
@@ -781,10 +807,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments",
+							"raw": "http://localhost:8080/users/:userId/comments",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -844,10 +872,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/comments/users/:userId",
+							"raw": "http://localhost:8080/comments/users/:userId",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"comments",
 								"users",
@@ -907,10 +937,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/comments/events/:eventId",
+							"raw": "http://localhost:8080/comments/events/:eventId",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"comments",
 								"events",
@@ -970,10 +1002,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/comments?id=1",
+							"raw": "http://localhost:8080/comments?id=1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"comments"
 							],
@@ -1024,10 +1058,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/comments?id=2",
+							"raw": "http://localhost:8080/comments?id=2",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"comments"
 							],
@@ -1090,10 +1126,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/comments/events/1",
+							"raw": "http://localhost:8080/admin/comments/events/1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"comments",
@@ -1149,10 +1187,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/comments/moderation",
+							"raw": "http://localhost:8080/admin/comments/moderation",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"comments",
@@ -1214,10 +1254,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/events/1",
+							"raw": "http://localhost:8080/events/1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"events",
 								"1"
@@ -1276,10 +1318,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments?sortBy=id&direction=desc",
+							"raw": "http://localhost:8080/users/:userId/comments?sortBy=id&direction=desc",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -1354,10 +1398,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments?sortBy=date&direction=asc",
+							"raw": "http://localhost:8080/users/:userId/comments?sortBy=date&direction=asc",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -1443,10 +1489,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/events?users=1",
+							"raw": "http://localhost:8080/admin/events?users=1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"events"
@@ -1503,10 +1551,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/comments/approve?id=2",
+							"raw": "http://localhost:8080/admin/comments/approve?id=2",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"comments",
@@ -1579,10 +1629,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/events/1?",
+							"raw": "http://localhost:8080/events/1?",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"events",
 								"1"
@@ -1645,10 +1697,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/comments/events/:eventId?sortBy=date&direction=desc",
+							"raw": "http://localhost:8080/comments/events/:eventId?sortBy=date&direction=desc",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"comments",
 								"events",
@@ -1718,10 +1772,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments/:commentId",
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -1787,10 +1843,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments",
+							"raw": "http://localhost:8080/users/:userId/comments",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -1860,10 +1918,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/events?users=1",
+							"raw": "http://localhost:8080/admin/events?users=1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"events"
@@ -1919,10 +1979,12 @@
 							"raw": "{\r\n    \"text\": \"text_update_after_Moderation_on\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments/:commentId",
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -1990,10 +2052,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/events/1",
+							"raw": "http://localhost:8080/events/1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"events",
 								"1"
@@ -2056,10 +2120,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/events?users=1",
+							"raw": "http://localhost:8080/admin/events?users=1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"events"
@@ -2119,10 +2185,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/comments/events/1/moderation",
+							"raw": "http://localhost:8080/admin/comments/events/1/moderation",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"comments",
@@ -2176,10 +2244,12 @@
 							"raw": "{\r\n    \"text\": \"text_updated_by_Admin\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/comments?id=1",
+							"raw": "http://localhost:8080/admin/comments?id=1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"comments"
@@ -2236,10 +2306,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/comments/approve?id=1",
+							"raw": "http://localhost:8080/admin/comments/approve?id=1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"comments",
@@ -2307,10 +2379,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/events/1",
+							"raw": "http://localhost:8080/events/1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"events",
 								"1"
@@ -2368,10 +2442,12 @@
 							"raw": "{\r\n  \"commentModeration\": false,\r\n  \"commentingClosed\": true\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/events/1/moderation",
+							"raw": "http://localhost:8080/admin/events/1/moderation",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"events",
@@ -2417,10 +2493,12 @@
 							"raw": "{\r\n    \"text\": \"text_update_after_close_commenting\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments/:commentId",
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -2481,10 +2559,12 @@
 							"raw": "{\r\n  \"email\": \"petr.ivanov@practicummail.ru\",\r\n  \"name\": \"Петр Иванов\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/users",
+							"raw": "http://localhost:8080/admin/users",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"users"
@@ -2528,10 +2608,12 @@
 							"raw": "{\r\n    \"text\": \"test_update_by_user_2\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments/:commentId",
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -2587,10 +2669,12 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/:userId/comments/:commentId",
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"users",
 								":userId",
@@ -2645,10 +2729,12 @@
 							"raw": "{\r\n    \"text\": \"text_updated_by_Admin\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/comments?id=1",
+							"raw": "http://localhost:8080/admin/comments?id=1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"comments"
@@ -2704,10 +2790,12 @@
 							"raw": "{\r\n    \"text\": \"test_update\"\r\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/comments/events/1",
+							"raw": "http://localhost:8080/admin/comments/events/1",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"admin",
 								"comments",
