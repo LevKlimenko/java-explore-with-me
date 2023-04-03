@@ -11,7 +11,6 @@ import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.client.stat.StatClient;
 import ru.practicum.comment.model.Comment;
-import ru.practicum.comment.model.CommentStatus;
 import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.event.dto.*;
@@ -45,7 +44,8 @@ import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.PUBLISH_EVE
 import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.REJECT_EVENT;
 import static ru.practicum.event.dto.UpdateUserEventDto.StateAction.CANCEL_REVIEW;
 import static ru.practicum.event.dto.UpdateUserEventDto.StateAction.SEND_TO_REVIEW;
-import static ru.practicum.event.model.State.*;
+import static ru.practicum.event.model.State.CANCELED;
+import static ru.practicum.event.model.State.PENDING;
 import static ru.practicum.request.model.Status.CONFIRMED;
 import static ru.practicum.request.model.Status.REJECTED;
 
