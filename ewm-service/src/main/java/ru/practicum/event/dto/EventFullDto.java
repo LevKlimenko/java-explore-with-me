@@ -1,7 +1,10 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.model.Location;
@@ -11,7 +14,6 @@ import ru.practicum.user.dto.UserShortDto;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -35,4 +37,6 @@ public class EventFullDto {
     State state;
     String title;
     Long views;
+    Boolean commentModeration;
+    Boolean commentingClosed;
 }

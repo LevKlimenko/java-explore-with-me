@@ -25,9 +25,9 @@ public class PrivateEventController {
     private final EventService eventService;
 
     @PostMapping("/{userId}/events")
-    public ResponseEntity<EventFullDto> saveByOwner(@PathVariable Long userId,
-                                                    @Valid @RequestBody NewEventDto newEventDto) {
-        EventFullDto event = eventService.saveByOwner(userId, newEventDto);
+    public ResponseEntity<EventFullDtoForUser> saveByOwner(@PathVariable Long userId,
+                                                           @Valid @RequestBody NewEventDto newEventDto) {
+        EventFullDtoForUser event = eventService.saveByOwner(userId, newEventDto);
         log.info("Event from userId={} with eventId={} have been added", userId, event.getId());
         return new ResponseEntity<>(event, HttpStatus.CREATED);
     }
@@ -42,16 +42,16 @@ public class PrivateEventController {
     }
 
     @GetMapping("/{userId}/events/{eventId}")
-    public ResponseEntity<EventFullDto> getById(@PathVariable Long userId, @PathVariable Long eventId) {
-        EventFullDto event = eventService.getByIdByOwner(userId, eventId);
+    public ResponseEntity<EventFullDtoForUser> getById(@PathVariable Long userId, @PathVariable Long eventId) {
+        EventFullDtoForUser event = eventService.getByIdByOwner(userId, eventId);
         log.info("Event with Id={} for user id={} have been received", eventId, userId);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }
 
     @PatchMapping("/{userId}/events/{eventId}")
-    public ResponseEntity<EventFullDto> patchByOwnerWithId(@PathVariable Long userId, @PathVariable Long eventId,
-                                                           @Valid @RequestBody UpdateUserEventDto updateEventDto) {
-        EventFullDto event = eventService.updateByOwner(userId, eventId, updateEventDto);
+    public ResponseEntity<EventFullDtoForUser> patchByOwnerWithId(@PathVariable Long userId, @PathVariable Long eventId,
+                                                                  @Valid @RequestBody UpdateUserEventDto updateEventDto) {
+        EventFullDtoForUser event = eventService.updateByOwner(userId, eventId, updateEventDto);
         log.info("Event with Id={} for user id={} have been updated", eventId, userId);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }

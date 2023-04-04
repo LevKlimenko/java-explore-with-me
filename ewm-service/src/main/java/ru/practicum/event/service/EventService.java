@@ -8,25 +8,27 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
-    EventFullDto saveByOwner(Long userId, NewEventDto newEventDto);
+    EventFullDtoForUser saveByOwner(Long userId, NewEventDto newEventDto);
 
     List<EventShortDto> eventsByOwner(Long id, int from, int size);
 
-    EventFullDto updateByOwner(Long userId, Long eventId, UpdateUserEventDto updateEventDto);
+    EventFullDtoForUser updateByOwner(Long userId, Long eventId, UpdateUserEventDto updateEventDto);
 
-    EventFullDto getByIdByOwner(Long userId, Long eventId);
+    EventFullDtoForUser getByIdByOwner(Long userId, Long eventId);
 
-    EventFullDto updateByAdmin(Long eventId, UpdateAdminEventDto updateEventDto);
+    EventFullDtoForAdmin updateByAdmin(Long eventId, UpdateAdminEventDto updateEventDto);
 
-    List<EventFullDto> findByAdminWithParameters(List<Long> users, List<String> states, List<Long> categories,
-                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
+    EventFullDtoForAdmin updateModerationByAdmin(Long eventId, UpdateAdminModerationDto updateDto);
+
+    List<EventFullDtoForAdmin> findByAdminWithParameters(List<Long> users, List<String> states, List<Long> categories,
+                                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
 
     List<EventShortDto> findAllByUserWithParameters(String text, List<Long> categories, Boolean paid,
                                                     LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                     Boolean onlyAvailable, String sort, int from, int size,
                                                     HttpServletRequest request);
 
-    EventFullDto findByIdByUser(Long id, HttpServletRequest request);
+    EventFullDtoForUser findByIdByUser(Long id, HttpServletRequest request);
 
     EventRequestStatusUpdateResult patchRequestByInitiator(Long userId, Long eventId, RequestStatusUpdateDto request);
 

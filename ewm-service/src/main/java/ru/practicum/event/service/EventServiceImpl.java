@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.client.stat.StatClient;
+import ru.practicum.comment.model.Comment;
+import ru.practicum.comment.model.CommentStatus;
+import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
@@ -37,11 +40,12 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
+import static ru.practicum.comment.model.CommentStatus.PUBLISHED;
 import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.PUBLISH_EVENT;
 import static ru.practicum.event.dto.UpdateAdminEventDto.StateAction.REJECT_EVENT;
 import static ru.practicum.event.dto.UpdateUserEventDto.StateAction.CANCEL_REVIEW;
 import static ru.practicum.event.dto.UpdateUserEventDto.StateAction.SEND_TO_REVIEW;
-import static ru.practicum.event.model.State.*;
+import static ru.practicum.event.model.State.PENDING;
 import static ru.practicum.request.model.Status.CONFIRMED;
 import static ru.practicum.request.model.Status.REJECTED;
 
@@ -56,6 +60,7 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
+    private final CommentRepository commentRepository;
     private final StatClient statClient;
 
     /**
@@ -64,15 +69,16 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto saveByOwner(Long userId, NewEventDto newEventDto) {
+    public EventFullDtoForUser saveByOwner(Long userId, NewEventDto newEventDto) {
         checkEventDateTimeIsAfter2HoursFromNow(newEventDto.getEventDate());
         User owner = findUserOrGetThrow(userId);
         Category category = findCategoryOrGetThrow(newEventDto.getCategory());
         Event event = new Event(0L, newEventDto.getAnnotation(), category, LocalDateTime.now(),
                 newEventDto.getDescription(), newEventDto.getLocation(), newEventDto.getEventDate(), owner,
-                newEventDto.isPaid(), newEventDto.getParticipantLimit(), null, newEventDto.isRequestModeration(),
-                State.PENDING, newEventDto.getTitle(), 0L, 0L);
-        return EventMapper.toEventFullDto(eventRepository.save(event));
+                newEventDto.isPaid(), newEventDto.getParticipantLimit(), null,
+                newEventDto.isRequestModeration(), State.PENDING, newEventDto.getTitle(), newEventDto.isCommentModeration(),
+                newEventDto.isCommentingClosed(), 0L, 0L, List.of());
+        return EventMapper.toEventFullDtoForUser(eventRepository.save(event));
     }
 
     @Override
@@ -84,10 +90,10 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateByOwner(Long userId, Long eventId, UpdateUserEventDto updateEventDto) {
+    public EventFullDtoForUser updateByOwner(Long userId, Long eventId, UpdateUserEventDto updateEventDto) {
         findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
-        if (event.getState() == PUBLISHED) {
+        if (event.getState() == State.PUBLISHED) {
             throw new ConflictException("Illegal state for update event. State=" + event.getState());
         }
         if (!event.getInitiator().getId().equals(userId)) {
@@ -98,22 +104,22 @@ public class EventServiceImpl implements EventService {
             if (updateEventDto.getStateAction() == SEND_TO_REVIEW) {
                 event.setState(PENDING);
             } else if (updateEventDto.getStateAction() == CANCEL_REVIEW) {
-                event.setState(CANCELED);
+                event.setState(State.CANCELED);
             } else {
                 throw new BadRequestException("StateAction is not supported for this argument");
             }
         }
-        return EventMapper.toEventFullDto(event);
+        return EventMapper.toEventFullDtoForUser(event);
     }
 
     @Override
-    public EventFullDto getByIdByOwner(Long userId, Long eventId) {
+    public EventFullDtoForUser getByIdByOwner(Long userId, Long eventId) {
         User user = findUserOrGetThrow(userId);
         Event event = findEventOrGetThrow(eventId);
         if (!event.getInitiator().getId().equals(user.getId())) {
             throw new ForbiddenException("User with id=" + userId + " not owner for event with id=" + eventId);
         }
-        return EventMapper.toEventFullDto(event);
+        return EventMapper.toEventFullDtoForUser(event);
     }
 
     @Transactional
@@ -132,7 +138,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requestsPending = requestRepository.findByIdIn(request.getRequestIds());
         for (Request rq : requestsPending) {
             if (requestRepository.findById(rq.getId()).orElseThrow(
-                    () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
+                            () -> new NotFoundException("Request with ID=" + rq.getId() + " not found"))
                     .getStatus().equals(CONFIRMED)) {
                 throw new ConflictException("You can't change an already accepted request");
             }
@@ -175,12 +181,12 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateByAdmin(Long eventId, UpdateAdminEventDto updateEventDto) {
+    public EventFullDtoForAdmin updateByAdmin(Long eventId, UpdateAdminEventDto updateEventDto) {
         Event event = findEventOrGetThrow(eventId);
-        if (event.getState().equals(PUBLISHED)) {
+        if (event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException("Event with id=" + eventId + " has already been published.You can't change it");
         }
-        if (event.getState().equals(CANCELED)) {
+        if (event.getState().equals(State.CANCELED)) {
             throw new ConflictException("Event with id=" + eventId + " has already been canceled");
         }
         if (event.getEventDate().isBefore(LocalDateTime.now().minusHours(1))) {
@@ -189,19 +195,36 @@ public class EventServiceImpl implements EventService {
         event = checkAndUpdateEvent(eventId, updateEventDto);
         if (event.getState() == PENDING) {
             if (updateEventDto.getStateAction() == PUBLISH_EVENT) {
-                event.setState(PUBLISHED);
+                event.setState(State.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (updateEventDto.getStateAction() == REJECT_EVENT) {
-                event.setState(CANCELED);
+                event.setState(State.CANCELED);
                 event.setPublishedOn(null);
             }
         }
-        return EventMapper.toEventFullDto(event);
+        findAllCommentsForAdmin(List.of(event));
+        return EventMapper.toEventFullDtoForAdmin(event);
+    }
+
+    @Transactional
+    @Override
+    public EventFullDtoForAdmin updateModerationByAdmin(Long eventId, UpdateAdminModerationDto updateDto) {
+        Event event = findEventOrGetThrow(eventId);
+        if (updateDto.getCommentingClosed() != null) {
+            event.setCommentingClosed(updateDto.getCommentingClosed());
+        }
+        if (updateDto.getCommentModeration() != null) {
+            event.setCommentModeration(updateDto.getCommentModeration());
+        }
+        findAllCommentsForAdmin(List.of(event));
+        return EventMapper.toEventFullDtoForAdmin(event);
     }
 
     @Override
-    public List<EventFullDto> findByAdminWithParameters(List<Long> users, List<String> states, List<Long> categories,
-                                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+    public List<EventFullDtoForAdmin> findByAdminWithParameters(List<Long> users, List<String> states,
+                                                                List<Long> categories,
+                                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                                int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size, SORT_BY_ASC);
         QEvent qEvent = QEvent.event;
         BooleanExpression expression = qEvent.id.isNotNull();
@@ -223,7 +246,8 @@ public class EventServiceImpl implements EventService {
             expression = expression.and(qEvent.eventDate.loe(rangeEnd));
         }
         List<Event> events = eventRepository.findAll(expression, pageable).getContent();
-        return events.stream().map(EventMapper::toEventFullDto).collect(Collectors.toList());
+        findAllCommentsForAdmin(events);
+        return events.stream().map(EventMapper::toEventFullDtoForAdmin).collect(Collectors.toList());
     }
 
     /**
@@ -248,7 +272,7 @@ public class EventServiceImpl implements EventService {
         }
         Pageable pageable = PageRequest.of(from / size, size, sortBy);
         QEvent qEvent = QEvent.event;
-        BooleanExpression expression = qEvent.id.isNotNull().and(qEvent.state.eq(PUBLISHED));
+        BooleanExpression expression = qEvent.id.isNotNull().and(qEvent.state.eq(State.PUBLISHED));
         if (text != null && !text.isEmpty()) {
             expression = expression.and((qEvent.annotation.containsIgnoreCase(text))
                     .or(qEvent.description.containsIgnoreCase(text)));
@@ -271,6 +295,7 @@ public class EventServiceImpl implements EventService {
             events = events.stream().filter(event ->
                     event.getParticipantLimit() > event.getConfirmedRequests()).collect(Collectors.toList());
         }
+        findConfirmedComments(events);
         findViews(events);
         statClient.saveHit(request);
         return events.stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
@@ -278,16 +303,16 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto findByIdByUser(Long id, HttpServletRequest request) {
+    public EventFullDtoForUser findByIdByUser(Long id, HttpServletRequest request) {
         Event event = findEventOrGetThrow(id);
-        if (!event.getState().equals(PUBLISHED)) {
+        if (!event.getState().equals(State.PUBLISHED)) {
             throw new BadRequestException("Event with id=" + id + " not published");
         }
         findViews(List.of(event));
+        findConfirmedComments(List.of(event));
         findConfirmedRequest(List.of(event));
         statClient.saveHit(request);
-        return EventMapper.toEventFullDto(event);
-
+        return EventMapper.toEventFullDtoForUser(event);
     }
 
     private User findUserOrGetThrow(Long userId) {
@@ -316,6 +341,22 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .collect(groupingBy(Request::getEvent, counting()));
         events.forEach(event -> event.setConfirmedRequests(requests.get(event)));
+    }
+
+    private void findConfirmedComments(List<Event> events) {
+        Map<Event, List<Comment>> comments =
+                commentRepository.getAllByEventInAndStatusEquals(events, PUBLISHED)
+                        .stream()
+                        .collect(groupingBy(Comment::getEvent));
+        events.forEach(event -> event.setComments(comments.getOrDefault(event, List.of())));
+    }
+
+    private void findAllCommentsForAdmin(List<Event> events) {
+        Map<Event, List<Comment>> comments =
+                commentRepository.getAllByEventInAndStatusNot(events, CommentStatus.CANCELED)
+                        .stream()
+                        .collect(groupingBy(Comment::getEvent));
+        events.forEach(event -> event.setComments(comments.getOrDefault(event, List.of())));
     }
 
     private void findViews(List<Event> events) {
@@ -357,6 +398,12 @@ public class EventServiceImpl implements EventService {
         }
         if (upEventDto.getTitle() != null && !upEventDto.getTitle().isBlank()) {
             event.setTitle(upEventDto.getTitle());
+        }
+        if (upEventDto.getCommentingClosed() != null) {
+            event.setCommentingClosed(upEventDto.getCommentingClosed());
+        }
+        if (upEventDto.getCommentModeration() != null) {
+            event.setCommentModeration(upEventDto.getCommentModeration());
         }
         return event;
     }

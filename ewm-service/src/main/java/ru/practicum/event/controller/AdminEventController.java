@@ -8,8 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventFullDtoForAdmin;
 import ru.practicum.event.dto.UpdateAdminEventDto;
+import ru.practicum.event.dto.UpdateAdminModerationDto;
 import ru.practicum.event.service.EventService;
 
 import javax.validation.Valid;
@@ -27,26 +28,34 @@ public class AdminEventController {
     private final EventService service;
 
     @GetMapping
-    public ResponseEntity<List<EventFullDto>> eventsByAdmin(@RequestParam(required = false) List<Long> users,
-                                                            @RequestParam(required = false) List<String> states,
-                                                            @RequestParam(required = false) List<Long> categories,
-                                                            @RequestParam(required = false)
-                                                            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-                                                            @RequestParam(required = false)
-                                                            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-                                                            @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                            @RequestParam(defaultValue = "10") @Positive int size) {
-        List<EventFullDto> events = service.findByAdminWithParameters(users, states, categories, rangeStart, rangeEnd,
+    public ResponseEntity<List<EventFullDtoForAdmin>> eventsByAdmin(@RequestParam(required = false) List<Long> users,
+                                                                    @RequestParam(required = false) List<String> states,
+                                                                    @RequestParam(required = false) List<Long> categories,
+                                                                    @RequestParam(required = false)
+                                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                                    @RequestParam(required = false)
+                                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                                    @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                                    @RequestParam(defaultValue = "10") @Positive int size) {
+        List<EventFullDtoForAdmin> events = service.findByAdminWithParameters(users, states, categories, rangeStart, rangeEnd,
                 from, size);
         log.info("Events for admin with parameters have been received");
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
 
     @PatchMapping("/{eventId}")
-    public ResponseEntity<EventFullDto> patchEventByAdmin(@PathVariable Long eventId,
-                                                          @Valid @RequestBody UpdateAdminEventDto updateEventDto) {
-        EventFullDto event = service.updateByAdmin(eventId, updateEventDto);
+    public ResponseEntity<EventFullDtoForAdmin> patchEventByAdmin(@PathVariable Long eventId,
+                                                                  @Valid @RequestBody UpdateAdminEventDto updateEventDto) {
+        EventFullDtoForAdmin event = service.updateByAdmin(eventId, updateEventDto);
         log.info("Event with Id={}  have been updated by Admin", eventId);
+        return new ResponseEntity<>(event, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{eventId}/moderation")
+    public ResponseEntity<EventFullDtoForAdmin> patchModerationEventByAdmin(@PathVariable Long eventId,
+                                                                            @RequestBody UpdateAdminModerationDto updateDto) {
+        EventFullDtoForAdmin event = service.updateModerationByAdmin(eventId, updateDto);
+        log.info("Event's moderation for Id={}  have been updated by Admin", eventId);
         return new ResponseEntity<>(event, HttpStatus.OK);
     }
 }

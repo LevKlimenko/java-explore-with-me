@@ -1,0 +1,3010 @@
+{
+	"info": {
+		"_postman_id": "800b0412-0e71-4bf4-a6ea-70d7a2528a22",
+		"name": "Diplom",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22353798"
+	},
+	"item": [
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "Добавление пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"idUser1\", pm.response.json().id);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test create user\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idUser1\"));\r",
+									"    pm.expect(jsonData.email).to.eql('ivan.petrov@practicummail.ru');\r",
+									"    pm.expect(jsonData.name).to.eql('Иван Петров');\r",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"ivan.petrov@practicummail.ru\",\r\n  \"name\": \"Иван Петров\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление категории",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"idCategory1\", pm.response.json().id);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test create category\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.name).to.eql('Спорт');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Спорт\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление события закрытого для комментариев",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"idEvent1\", pm.response.json().id);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test create event with commentingClosed=true and commentModeration=true \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.state).to.eql('PENDING')\r",
+									"    pm.expect(jsonData.commentModeration).to.true;\r",
+									"    pm.expect(jsonData.commentingClosed).to.true;\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"annotation\": \"Сплав на байдарках похож на полет.\",\r\n  \"category\": {{idCategory1}},\r\n  \"description\": \"Сплав на байдарках похож на полет. На спокойной воде — это парение. На бурной, порожистой — выполнение фигур высшего пилотажа. И то, и другое дарят чувство обновления, феерические эмоции, яркие впечатления.\",\r\n  \"eventDate\": \"2024-12-31 15:10:05\",\r\n  \"location\": {\r\n    \"lat\": 55.754167,\r\n    \"lon\": 37.62\r\n  },\r\n  \"paid\": true,\r\n  \"participantLimit\": 10,\r\n  \"requestModeration\": false,\r\n  \"title\": \"Сплав на байдарках\",\r\n  \"commentModeration\": true,\r\n  \"commentingClosed\": true\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:id/events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":id",
+								"events"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление комментария при неопубликованном событии",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([409]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"text_when_event_not_published\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/events/:eventId/user/:userId/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								":eventId",
+								"user",
+								":userId",
+								"comments"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление события - публикация админом",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update event with state=PUBLISHED \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData.commentModeration).to.true;\r",
+									"    pm.expect(jsonData.commentingClosed).to.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"stateAction\": \"PUBLISH_EVENT\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/events/:eventId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"events",
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление комментария при закрытом комментировании",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([409]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"test_with_closed_commenting\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/events/:eventId/user/:userId/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								":eventId",
+								"user",
+								":userId",
+								"comments"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление события админом - открытие комментирования",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update event with commentingClosed=false and commentModeration=false \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData.commentModeration).to.false;\r",
+									"    pm.expect(jsonData.commentingClosed).to.false;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"commentModeration\": false,\r\n  \"commentingClosed\": false\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/events/:eventId/moderation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"events",
+								":eventId",
+								"moderation"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление комментария",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"idCom1\", pm.response.json().id);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
+									"});\r",
+									"pm.test(\"Test create comment\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"text\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/events/:eventId/user/:userId/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								":eventId",
+								"user",
+								":userId",
+								"comments"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Попытка approve комментария, который уже опубликован",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([409]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments/approve?id={{idCom1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments",
+								"approve"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновления комментария автором",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update comment by owner\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text_update');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"text_update\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments",
+								":commentId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								},
+								{
+									"key": "commentId",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения своих комментариев автором без параметров сортировки",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get comments by owner\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[0].status).to.eql('PUBLISHED');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление события - включение модерации",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update event with commentingClosed=false and commentModeration=true \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData.commentModeration).to.true;\r",
+									"    pm.expect(jsonData.commentingClosed).to.false;\r",
+									"    pm.expect(jsonData.comments.length).to.eql(1);\r",
+									"    var comment1 = jsonData.comments[0];\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(comment1.text).to.eql(\"text_update\");\r",
+									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment1.status).to.eql(\"PUBLISHED\");\r",
+									"    pm.expect(comment1.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"commentModeration\": true\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/events/:eventId/moderation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"events",
+								":eventId",
+								"moderation"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление комментария 2 после включения модерации",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"idCom2\", pm.response.json().id);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
+									"});\r",
+									"pm.test(\"Test create comment 2 with moderation\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom2\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text_2_On_Moderation');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('ON_MODERATION');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"text_2_On_Moderation\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/events/:eventId/user/:userId/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								":eventId",
+								"user",
+								":userId",
+								"comments"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения своих комментариев автором после добавления комментария с модерацией",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comment by owner\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(2);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[0].status).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData[1].id).to.eql(pm.globals.get(\"idCom2\"));\r",
+									"    pm.expect(jsonData[1].text).to.eql('text_2_On_Moderation');\r",
+									"    pm.expect(jsonData[1].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[1].status).to.eql('ON_MODERATION')\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения комментариев у пользователя другими пользователями",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comments by public\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/comments/users/:userId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"comments",
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения комментариев у события пользователями",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comments by public\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/comments/events/:eventId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"comments",
+								"events",
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения комментариев по ID пользователями",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get comments by owner\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text_update');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/comments?id={{idCom1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"comments"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения комментариев по ID пользователями при комментарии на модерации",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([409]);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/comments?id=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"comments"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения админом всех  комментариев к событию",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comments to event by Admin\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(2);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[0].status).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData[1].id).to.eql(pm.globals.get(\"idCom2\"));\r",
+									"    pm.expect(jsonData[1].text).to.eql('text_2_On_Moderation');\r",
+									"    pm.expect(jsonData[1].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[1].status).to.eql('ON_MODERATION')\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments/events/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments",
+								"events",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения админом всех  комментариев требующих модерацию",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test of getting all comments that need moderation by Admin\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(2);\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_2_On_Moderation');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[0].status).to.eql('ON_MODERATION')\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments?status=ON_MODERATION",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "ON_MODERATION"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения пользователем события с комментариями при модерации",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get comments for event with 1 comment on moderation \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData.commentModeration).to.true;\r",
+									"    pm.expect(jsonData.commentingClosed).to.false;\r",
+									"    pm.expect(jsonData.comments.length).to.eql(1);\r",
+									"    var comment = jsonData.comments[0];\r",
+									"    pm.expect(comment.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(comment.text).to.eql(\"text_update\");\r",
+									"    pm.expect(comment.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/events/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения своих комментариев автором c сортировкой Desc по ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comments by owner with sort by Id Sort.Desc\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(2);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom2\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_2_On_Moderation');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[0].status).to.eql('ON_MODERATION')\r",
+									"    pm.expect(jsonData[1].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[1].text).to.eql('text_update');\r",
+									"    pm.expect(jsonData[1].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[1].status).to.eql('PUBLISHED')\r",
+									"   \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments?sortBy=id&direction=desc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "direction",
+									"value": "desc"
+								}
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения своих комментариев автором c сортировкой ASC по DATE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comments by owner with sort by Date Sort.ASC\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(2);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[0].status).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData[1].id).to.eql(pm.globals.get(\"idCom2\"));\r",
+									"    pm.expect(jsonData[1].text).to.eql('text_2_On_Moderation');\r",
+									"    pm.expect(jsonData[1].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[1].status).to.eql('ON_MODERATION')\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments?sortBy=date&direction=asc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "date"
+								},
+								{
+									"key": "direction",
+									"value": "asc"
+								}
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения админом событий пользователя 1 с комментариями",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get event with 1 comment on moderation by Admin \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var eventData = jsonData[0];\r",
+									"    pm.expect(eventData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(eventData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(eventData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(eventData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(eventData.commentModeration).to.true;\r",
+									"    pm.expect(eventData.commentingClosed).to.false;\r",
+									"    pm.expect(eventData.comments.length).to.eql(2);\r",
+									"    var comment1 = eventData.comments[0];\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(comment1.text).to.eql(\"text_update\");\r",
+									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment1.status).to.eql(\"PUBLISHED\");\r",
+									"    pm.expect(comment1.createdOn).not.null;\r",
+									"    var comment2 = eventData.comments[1];\r",
+									"    pm.expect(comment2.id).to.eql(pm.globals.get(\"idCom2\"));\r",
+									"    pm.expect(comment2.text).to.eql(\"text_2_On_Moderation\");\r",
+									"    pm.expect(comment2.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment2.status).to.eql(\"ON_MODERATION\");\r",
+									"    pm.expect(comment2.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/events?users={{idUser1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"events"
+							],
+							"query": [
+								{
+									"key": "users",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Публикация админом при модерировании комментария 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update approve comment by Admin\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom2\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text_2_On_Moderation');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
+									"    pm.expect(jsonData.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments/approve?id={{idCom2}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments",
+								"approve"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{idCom2}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения пользователем события с 2 комментариями",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get comments for event with 1 comment on moderation \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData.commentModeration).to.true;\r",
+									"    pm.expect(jsonData.commentingClosed).to.false;\r",
+									"    pm.expect(jsonData.comments.length).to.eql(2);\r",
+									"    var comment = jsonData.comments[0];\r",
+									"    pm.expect(comment.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(comment.text).to.eql(\"text_update\");\r",
+									"    pm.expect(comment.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment.createdOn).not.null;\r",
+									"    var comment2 = jsonData.comments[1];\r",
+									"    pm.expect(comment2.id).to.eql(pm.globals.get(\"idCom2\"));\r",
+									"    pm.expect(comment2.text).to.eql(\"text_2_On_Moderation\");\r",
+									"    pm.expect(comment2.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment2.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/events/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения комментариев у события c сортировкой по дате",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comments by public\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(2);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom2\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_2_On_Moderation');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[1].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[1].text).to.eql('text_update');\r",
+									"    pm.expect(jsonData[1].authorName).to.eql('Иван Петров');\r",
+									"   \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/comments/events/:eventId?sortBy=date&direction=desc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"comments",
+								"events",
+								":eventId"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "date"
+								},
+								{
+									"key": "direction",
+									"value": "desc"
+								}
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление комментария автором",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([204]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments",
+								":commentId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								},
+								{
+									"key": "commentId",
+									"value": "{{idCom2}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения своих комментариев автором после удаления",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comments to event by owner\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_update');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[0].status).to.eql('PUBLISHED')\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения админом событий пользователя 1 с комментариями после удаления",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get event after delete comment by Admin \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var eventData = jsonData[0];\r",
+									"    pm.expect(eventData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(eventData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(eventData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(eventData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(eventData.commentModeration).to.true;\r",
+									"    pm.expect(eventData.commentingClosed).to.false;\r",
+									"    pm.expect(eventData.comments.length).to.eql(1);\r",
+									"    var comment1 = eventData.comments[0];\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(comment1.text).to.eql(\"text_update\");\r",
+									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment1.status).to.eql(\"PUBLISHED\");\r",
+									"    pm.expect(comment1.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/events?users={{idUser1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"events"
+							],
+							"query": [
+								{
+									"key": "users",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновления комментария автором после включения модерации",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update comment after Event.Moderation=true by owner\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text_update_after_Moderation_on');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('ON_MODERATION');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"text_update_after_Moderation_on\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments",
+								":commentId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								},
+								{
+									"key": "commentId",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения пользователем комментариев к событию с модерацией комментария 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get comments for event with 1 comment on moderation by public \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData.commentModeration).to.true;\r",
+									"    pm.expect(jsonData.commentingClosed).to.false;\r",
+									"    pm.expect(jsonData.comments.length).to.eql(0);\r",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/events/:eventId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения админом событий пользователя 1 с комментариями после включения модерации",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get event after event.commentModeration=true by Admin \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var eventData = jsonData[0];\r",
+									"    pm.expect(eventData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(eventData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(eventData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(eventData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(eventData.commentModeration).to.true;\r",
+									"    pm.expect(eventData.commentingClosed).to.false;\r",
+									"    pm.expect(eventData.comments.length).to.eql(1);\r",
+									"    var comment1 = eventData.comments[0];\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(comment1.text).to.eql(\"text_update_after_Moderation_on\");\r",
+									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment1.status).to.eql(\"ON_MODERATION\");\r",
+									"    pm.expect(comment1.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/events?users={{idUser1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"events"
+							],
+							"query": [
+								{
+									"key": "users",
+									"value": "{{idUser1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения админом  комментариев к событию с модерацией",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comments to event by Admin\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(1);\r",
+									"    pm.expect(jsonData[0].id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData[0].text).to.eql('text_update_after_Moderation_on');\r",
+									"    pm.expect(jsonData[0].authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData[0].status).to.eql('ON_MODERATION')\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments/events/:eventId/moderation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments",
+								"events",
+								":eventId",
+								"moderation"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Редактирование текста админом",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update comment after Event.Moderation=true by Admin\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text_updated_by_Admin');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('ON_MODERATION');\r",
+									"    pm.expect(jsonData.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"text_updated_by_Admin\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments?id={{idCom1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Публикация админом при модерировании",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update approve comment by Admin\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text_updated_by_Admin');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('PUBLISHED');\r",
+									"    pm.expect(jsonData.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments/approve?id={{idCom1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments",
+								"approve"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения пользователем комментариев к событию с модерацией комментария 1 и обновленного админом",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get comments for event with 1 comment after Admin moderation \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData.commentModeration).to.true;\r",
+									"    pm.expect(jsonData.commentingClosed).to.false;\r",
+									"    pm.expect(jsonData.comments.length).to.eql(1);\r",
+									"    var comment = jsonData.comments[0];\r",
+									"    pm.expect(comment.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(comment.text).to.eql(\"text_updated_by_Admin\");\r",
+									"    pm.expect(comment.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/events/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"events",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление события админом - закрытие комментирования",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update event with commentingClosed=true\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idEvent1\"));\r",
+									"    pm.expect(jsonData.annotation).to.eql('Сплав на байдарках похож на полет.');\r",
+									"    pm.expect(jsonData.category.id).to.eql(pm.globals.get(\"idCategory1\"));\r",
+									"    pm.expect(jsonData.state).to.eql('PUBLISHED')\r",
+									"    pm.expect(jsonData.commentModeration).to.false;\r",
+									"    pm.expect(jsonData.commentingClosed).to.true;\r",
+									"    var comment1 = jsonData.comments[0];\r",
+									"    pm.expect(comment1.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(comment1.text).to.eql(\"text_updated_by_Admin\");\r",
+									"    pm.expect(comment1.authorName).to.eql(\"Иван Петров\");\r",
+									"    pm.expect(comment1.status).to.eql(\"PUBLISHED\");\r",
+									"    pm.expect(comment1.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"commentModeration\": false,\r\n  \"commentingClosed\": true\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/events/:id/moderation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"events",
+								":id",
+								"moderation"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновления комментария автором при закрытом комментировании",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([409]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"text_update_after_close_commenting\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments",
+								":commentId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser1}}"
+								},
+								{
+									"key": "commentId",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление пользователя 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"idUser2\", pm.response.json().id);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201]);\r",
+									"});\r",
+									"pm.test(\"Test create user 2\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idUser2\"));\r",
+									"    pm.expect(jsonData.email).to.eql('petr.ivanov@practicummail.ru');\r",
+									"    pm.expect(jsonData.name).to.eql('Петр Иванов');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"petr.ivanov@practicummail.ru\",\r\n  \"name\": \"Петр Иванов\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновления комментария, сделанного другим пользователем",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([409]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"test_update_by_user_2\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments",
+								":commentId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser2}}"
+								},
+								{
+									"key": "commentId",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление комментария, созданный пользователем 1, пользователем 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([409]);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								":userId",
+								"comments",
+								":commentId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{idUser2}}"
+								},
+								{
+									"key": "commentId",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Установка статуса \"CANCELED\" комментарию",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test update comment after Event.Moderation=true by Admin\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.globals.get(\"idCom1\"));\r",
+									"    pm.expect(jsonData.text).to.eql('text_updated_by_Admin');\r",
+									"    pm.expect(jsonData.authorName).to.eql('Иван Петров');\r",
+									"    pm.expect(jsonData.status).to.eql('CANCELED');\r",
+									"    pm.expect(jsonData.createdOn).not.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments/cancel?id={{idCom1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments",
+								"cancel"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление комментария админом",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([204]);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments?id={{idCom1}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{idCom1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получения админом комментариев к событию после удаления админом",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+									"});\r",
+									"pm.test(\"Test get all comments after delete by Admin\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length).to.eql(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/comments/events/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"comments",
+								"events",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{idEvent1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
