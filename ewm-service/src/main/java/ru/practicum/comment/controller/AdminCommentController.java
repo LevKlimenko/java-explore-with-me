@@ -29,28 +29,28 @@ public class AdminCommentController {
     public ResponseEntity<CommentFullDto> updateTextByAdmin(@RequestParam @Positive Long id,
                                                             @Valid @RequestBody CommentIncomingDto commentIncomingDto) {
         CommentFullDto comment = commentService.updateTextByAdmin(id, commentIncomingDto);
-        log.info("Comment id={} was updated by the admin", id);
+        log.info("Comment id={} was updated by admin", id);
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
     @PatchMapping("/comments/approve")
     public ResponseEntity<CommentFullDto> approveByAdmin(@RequestParam @Positive Long id) {
         CommentFullDto comment = commentService.approveCommentByAdmin(id);
-        log.info("Comment id={} was approved by the admin", id);
+        log.info("Comment id={} was approved by admin", id);
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
     @PatchMapping("/comments/cancel")
     public ResponseEntity<CommentFullDto> cancelByAdmin(@RequestParam @Positive Long id) {
         CommentFullDto comment = commentService.cancelCommentByAdmin(id);
-        log.info("Comment id={} was approved by the admin", id);
+        log.info("Comment id={} was canceled by admin", id);
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
     @DeleteMapping("/comments")
     public ResponseEntity<Object> deleteCommentByAdmin(@RequestParam @Positive Long id) {
         commentService.deleteByIdByAdmin(id);
-        log.info("Comment id={} was deleted by the admin", id);
+        log.info("Comment id={} was deleted by admin", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
